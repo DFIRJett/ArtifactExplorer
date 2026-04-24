@@ -2258,6 +2258,31 @@
       color: #ffffff;
       border-color: #ffd166;
     }
+    /* Soft green "start here" glow on Scenarios — guides new visitors
+       to the case-study walkthroughs as the recommended entry point.
+       Suppressed when the button is .active (user is already in the
+       Scenarios pane, no need to draw further attention). */
+    #scenarios-toggle:not(.active) {
+      border-color: rgba(74, 222, 128, 0.55) !important;
+      box-shadow: 0 0 0 1px rgba(74, 222, 128, 0.18),
+                  0 0 14px rgba(74, 222, 128, 0.30);
+      animation: scenarios-pulse 2.6s ease-in-out infinite;
+    }
+    #scenarios-toggle:not(.active):hover {
+      border-color: rgba(74, 222, 128, 0.80) !important;
+      box-shadow: 0 0 0 2px rgba(74, 222, 128, 0.30),
+                  0 0 22px rgba(74, 222, 128, 0.55);
+    }
+    @keyframes scenarios-pulse {
+      0%, 100% {
+        box-shadow: 0 0 0 1px rgba(74, 222, 128, 0.15),
+                    0 0 10px rgba(74, 222, 128, 0.20);
+      }
+      50% {
+        box-shadow: 0 0 0 2px rgba(74, 222, 128, 0.35),
+                    0 0 22px rgba(74, 222, 128, 0.50);
+      }
+    }
     .tool-launch-label { flex: 1; }
     #scenarios-toggle .badge {
       display: inline-block; margin-left: auto;

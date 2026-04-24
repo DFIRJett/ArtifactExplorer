@@ -3948,7 +3948,6 @@
       n.betweenness = state.betweenness[n.id] || 0;
       n.betweennessRank = state.betweennessRank[n.id] || 0;
     }
-    console.log("betweenness ready; top 5:", sorted.slice(0, 5).map(([id, s]) => `${id.replace(/^(artifact|concept|ghost)::/,"")} (${s.toFixed(4)})`).join(", "));
   }
 
   // ==================================================================
@@ -4008,7 +4007,6 @@
     }
     state.articulationPoints = articulation;
     state.bridgeEdgeKeys = bridges;
-    console.log(`articulation points: ${articulation.size}, bridges: ${bridges.size}`);
   }
 
   // ==================================================================
@@ -4081,7 +4079,6 @@
     for (const n of data.graph.nodes) {
       n.community = state.communityById[n.id] || 0;
     }
-    console.log(`communities: ${next} detected over ${iter} iteration(s)`);
   }
 
   // ==================================================================
@@ -9705,9 +9702,6 @@
     }
     uniq.sort((a, b) => b.score - a.score);
     if (uniq.length > 1) {
-      console.log("[spine] candidate paths:", uniq.map(c =>
-        `${c.source}: ${c.path.nodes.length} hops, score ${c.score}`).join(" | "));
-      console.log("[spine] picked:", uniq[0].source, uniq[0].path.nodes);
     }
     return uniq[0].path;
   }

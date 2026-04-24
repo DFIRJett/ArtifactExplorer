@@ -2085,6 +2085,40 @@
       outline: none;
       box-sizing: border-box;
     }
+    /* Scenario-pane search-row — slot at the top of the scenario list
+       that replaced the old "No overlay (clear)" full-width row. Search
+       input takes the lion's share; small x button on the right preserves
+       the clear-active-scenario affordance. */
+    .scenario-search-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 4px;
+      margin-bottom: 6px;
+    }
+    .scenario-search-row #node-search-input {
+      width: auto;
+      grid-column: 1;
+    }
+    .scenario-search-row #scenario-clear-mini {
+      grid-column: 2;
+      background: transparent;
+      color: var(--ink-faint);
+      border: 1px solid var(--stroke);
+      border-radius: 4px;
+      font: inherit;
+      font-size: 12px;
+      width: 28px;
+      cursor: pointer;
+      transition: color 0.12s, border-color 0.12s, background 0.12s;
+    }
+    .scenario-search-row #scenario-clear-mini:hover {
+      color: #ff9b9b;
+      border-color: #ff5a5a;
+      background: rgba(255, 90, 90, 0.06);
+    }
+    .scenario-search-row #node-search-results {
+      grid-column: 1 / -1;  /* span full width */
+    }
     #node-search-input:focus {
       border-color: var(--accent);
       box-shadow: 0 0 0 2px rgba(120, 225, 255, 0.15);
@@ -3060,11 +3094,6 @@
 
       
       <div class="tool-pane-page active collapsed" id="tool-pane-config">
-        
-        <div id="node-search-wrap">
-          <input id="node-search-input" type="search" placeholder="Search artifacts + concepts..." autocomplete="off" spellcheck="false">
-          <div id="node-search-results"></div>
-        </div>
         <h4 class="tool-section-title">Config · Filters</h4>
         <h4 class="tool-section-title">Volatility floor</h4>
         <div class="tool-hint">Hide artifacts whose natural evidence lifetime is below this tier. Slide right = show only the most durable evidence.</div>
@@ -4056,11 +4085,13 @@
   // Wire the artifact search input — typeahead filter against node names
   // + aliases via _nodeNameIndex (lazily built). Click a result to
   // spotlight + open details. Keyboard Enter activates the first result.
-  (function wireNodeSearch() {
-    const tryWire = () => {
-      const input = document.getElementById("node-search-input");
-      const results = document.getElementById("node-search-results");
-      if (!input || !results) return false;
+  // Refactored 2026-04-24: extracted into a re-callable function so the
+  // search input can be re-mounted (e.g. into the scenarios pane on each
+  // render) without losing typeahead handlers.
+  function wireNodeSearchOnElement(input, results) {
+    if (!input || !results) return false;
+    if (input._nodeSearchWired) return true;  // idempotent
+    input._nodeSearchWired = true;
       let activeIdx = 0;
       let lastMatches = [];
       const KIND_LABEL = { artifact: "art", concept: "cncpt", "ghost-artifact": "ghost" };
@@ -4145,6 +4176,15 @@
         }
       });
       return true;
+  }
+  // Bootstrap — find any pre-existing input on first paint (the scenarios
+  // pane re-mounts the input on each render and calls wireNodeSearchOnElement
+  // directly, so this poll is mostly defensive for an alternate mount point).
+  (function bootstrapNodeSearch() {
+    const tryWire = () => {
+      const input = document.getElementById("node-search-input");
+      const results = document.getElementById("node-search-results");
+      return wireNodeSearchOnElement(input, results);
     };
     if (!tryWire()) {
       const poll = setInterval(() => { if (tryWire()) clearInterval(poll); }, 200);
@@ -10667,11 +10707,24 @@
         });
       }
 
-      const clearBtn = document.createElement("button");
-      clearBtn.className = "scenario-option clear-option";
-      clearBtn.textContent = "No overlay (clear)";
-      clearBtn.addEventListener("click", () => applyScenarioPick(null));
-      list.appendChild(clearBtn);
+      // Search-in-place — replaces the prior "No overlay (clear)" full-width
+      // row. Search input dominates; clear-scenario action shrunk to a small
+      // x button on the right so the affordance survives without consuming
+      // a whole row of vertical real estate.
+      const searchRow = document.createElement("div");
+      searchRow.className = "scenario-search-row";
+      searchRow.innerHTML =
+        '<input id="node-search-input" type="search" placeholder="Search artifacts + concepts..." autocomplete="off" spellcheck="false">' +
+        '<button id="scenario-clear-mini" title="Clear active scenario / overlay">x</button>' +
+        '<div id="node-search-results"></div>';
+      list.appendChild(searchRow);
+      // Wire the clear-scenario action to the small x button.
+      const clearMini = searchRow.querySelector("#scenario-clear-mini");
+      if (clearMini) clearMini.addEventListener("click", () => applyScenarioPick(null));
+      // Re-arm the typeahead handlers — wireNodeSearch's IIFE ran once at
+      // boot but the input element it found was the one in Config; that
+      // copy got removed. Re-bind now to the freshly-inserted input here.
+      if (typeof wireNodeSearchOnElement === "function") wireNodeSearchOnElement(searchRow.querySelector("#node-search-input"), searchRow.querySelector("#node-search-results"));
 
       if (filtered.length === 0) {
         const empty = document.createElement("div");

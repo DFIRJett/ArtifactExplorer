@@ -1,0 +1,232 @@
+# Canonical concept + role registry.
+#
+# This file is the SINGLE SOURCE OF TRUTH for which (concept, role) pairs
+# are valid `references-data:` entries in artifact frontmatter. The build
+# pipeline and the `tools/validate.py` CLI check every artifact's
+# references-data against this registry. Adding a new concept or role
+# requires BOTH a new entry here AND the corresponding data/concepts/<Name>.md
+# file with the same roles listed under its own `roles:` frontmatter.
+#
+# `kind` distinguishes identifier concepts (globally-unique forensic
+# identifiers — join keys for cross-artifact corroboration) from value-type
+# concepts (reusable non-unique values like paths, URLs, hashes). The two
+# kinds are treated differently by the graph's substrate view and by the
+# cross-verification logic.
+
+version: 1
+
+concepts:
+
+  AppID:
+    kind: value-type
+    description: "Windows Application User-Model ID or legacy COM CLSID registered to an executable."
+    roles:
+      - jumplistApp        # AppID owning a Jump List entry
+      - muiCachedApp       # AppID resolved by MUICache
+      - pinnedApp          # AppID pinned to Start Menu / Taskbar
+
+  ContainerID:
+    kind: identifier
+    description: "USB / PnP container ID — groups functions of the same physical device."
+    roles:
+      - deviceIdentity
+
+  DeviceSerial:
+    kind: identifier
+    description: "USB device serial number. Globally unique per-device when vendor-cooperative."
+    roles:
+      - usbDevice
+
+  DomainName:
+    kind: value-type
+    description: "DNS / AD / email domain-name string."
+    roles:
+      - dnsResolvedName
+      - emailDomain
+      - httpRequestHost
+      - networkProfileDnsSuffix
+      - targetDomain
+
+  EmailAddress:
+    kind: value-type
+    description: "RFC 5322 email address."
+    roles:
+      - cachedIdentity
+      - recipient
+      - sender
+
+  ExecutableHash:
+    kind: value-type
+    description: "Cryptographic hash (MD5 / SHA-1 / SHA-256 / IMPHASH) of a PE file, cert, or other signed content."
+    roles:
+      - contentHash        # hash captured as content of the artifact (cert thumbprint, file-hash-in-log)
+      - detectedHash
+      - ranHash
+      - scannedHash
+
+  ExecutablePath:
+    kind: value-type
+    description: "Filesystem path of an executable / DLL referenced by an artifact."
+    roles:
+      - actingProcess
+      - configuredPersistence
+      - loadedModule
+      - ranProcess
+      - scannedTarget
+      - shellReference
+
+  FILETIME100ns:
+    kind: value-type
+    description: "Windows FILETIME — 64-bit unsigned integer counting 100-nanosecond intervals since 1601-01-01T00:00:00Z UTC. Canonical timestamp encoding across the Windows kernel, filesystem ($MFT / $FILE_NAME), registry (key-last-write), event log (System\\TimeCreated), and most DFIR-relevant binary structures."
+    roles:
+      - absoluteTimestamp
+      - durationDelta
+      - fractionalPrecisionSignal
+
+  FilesystemVolumeSerial:
+    kind: identifier
+    description: "NTFS / FAT / exFAT VBR volume serial number (32 / 64-bit)."
+    roles:
+      - accessedAtSerial
+      - runtimeSerial
+
+  FirewallRuleName:
+    kind: identifier
+    description: "Windows Firewall rule identifier / display name."
+    roles:
+      - addedRule
+      - deletedRule
+      - identitySubject
+      - modifiedRule
+
+  GPTPartitionGUID:
+    kind: identifier
+    description: "GPT per-partition GUID (128-bit, distinct from disk GUID)."
+    roles:
+      - kernelMountRecord
+      - volumeBinding
+
+  HandleId:
+    kind: value-type
+    description: "Windows handle identifier — per-process kernel object handle. Aggressively recycled within a process; not a join key by itself."
+    roles:
+      - accessHandle
+      - closedHandle
+      - openedHandle
+
+  IPAddress:
+    kind: value-type
+    description: "IPv4 / IPv6 address text."
+    roles:
+      - authSourceIp
+      - destinationIp
+      - proxyClientIp
+      - relayHop
+      - resolvedIp
+      - sourceIp
+
+  LogonSessionId:
+    kind: identifier
+    description: "Windows LUID of a logon session. Unique per-boot."
+    roles:
+      - identitySubject
+      - sessionContext
+
+  MachineNetBIOS:
+    kind: identifier
+    description: "NetBIOS computer name (legacy short hostname)."
+    roles:
+      - trackerMachineId
+
+  MBRDiskSignature:
+    kind: identifier
+    description: "MBR disk signature (32-bit). Unique per-MBR-formatted disk in practice."
+    roles:
+      - diskIdentity
+      - kernelMountRecord
+      - volumeBinding
+
+  MFTEntryReference:
+    kind: identifier
+    description: "NTFS MFT entry number + sequence — durable file identity across rename."
+    roles:
+      - parentDirectory
+      - referencedFile
+      - targetFile         # file that is the target/object of the surrounding operation
+      - thisRecord
+
+  PIDL:
+    kind: identifier
+    description: "Shell ITEMIDLIST — binary pointer to an Explorer namespace item."
+    roles:
+      - browsedItem
+      - dialogItem
+      - linkedItem
+
+  ProcessId:
+    kind: value-type
+    description: "Windows process identifier (PID). Reused within a boot (after process exit) and across reboots — needs (PID, CreationTime) or (PID, LogonId) to act as a join key."
+    roles:
+      - actingProcess
+      - createdProcess
+      - parentProcess
+      - sessionContext     # PID captured as context of a broader session / snapshot
+      - targetProcess
+
+  RegistryKeyPath:
+    kind: value-type
+    description: "Registry key path string (hive + subkey)."
+    roles:
+      - subjectKey
+
+  ServiceName:
+    kind: identifier
+    description: "Windows service short name / registered service identifier."
+    roles:
+      - identitySubject
+      - installedService
+      - persistedService   # service captured via its persistence footprint (autologger provider, firewall profile, etc.)
+      - stateChangeTarget
+
+  TaskName:
+    kind: identifier
+    description: "Scheduled Task path (e.g., \\Microsoft\\Windows\\CustomTask\\<task>)."
+    roles:
+      - executedTask
+      - identitySubject
+      - registeredTask
+      - scheduledTask      # generic mention of a task as a scheduled-execution object (pre-execution, config-only)
+
+  URL:
+    kind: value-type
+    description: "URL string (RFC 3986)."
+    roles:
+      - downloadedFromUrl
+      - embeddedReferenceUrl
+      - proxyRequestUrl
+      - referrerUrl
+      - visitedUrl
+
+  UserSID:
+    kind: identifier
+    description: "Windows Security Identifier for a user principal."
+    roles:
+      - actingUser
+      - authenticatingUser
+      - identitySubject
+      - profileOwner
+      - targetUser
+
+  VolumeGUID:
+    kind: identifier
+    description: "Windows Volume GUID ({GUID}) — stable mount-manager volume identity."
+    roles:
+      - accessedVolume
+      - mountedVolume
+
+  VolumeLabel:
+    kind: value-type
+    description: "User-set NTFS / FAT volume label (e.g., 'Data', 'Backup'). Reusable string, not a join key."
+    roles:
+      - accessedAtLabel
+      - deviceLabel

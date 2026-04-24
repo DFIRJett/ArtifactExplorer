@@ -1,0 +1,306 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/mondrianaire/DFIRCLI/blob/main/schema/artifact.schema.json",
+  "title": "DFIRCLI Artifact frontmatter",
+  "description": "Schema for the YAML frontmatter of an artifact file under data/artifacts/<substrate>/<Name>.md. The body (Markdown below the closing '---' fence) is prose and not validated.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["name", "substrate", "substrate-instance", "link", "platform", "fields", "observations"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Artifact identifier. Must match the filename without the .md extension and must be unique across the entire artifacts tree.",
+      "pattern": "^[A-Za-z][A-Za-z0-9_-]*$",
+      "minLength": 2
+    },
+    "title-description": {
+      "type": "string",
+      "description": "One-line human-readable title shown in the details-panel header for this artifact. For windows-evtx artifacts the viewer prepends 'winevtx - '."
+    },
+    "aliases": {
+      "type": "array",
+      "items": { "type": ["string", "integer"] },
+      "description": "Alternative names analysts may use for this artifact. Integers are allowed (e.g., 4624) for event-id shorthand. Included in search/filter but not rendered as node labels."
+    },
+    "link": {
+      "type": "string",
+      "description": "Primary link-affinity classification — drives the node's primary color in link-driver mode.",
+      "enum": ["application", "device", "evasion", "file", "memory", "network", "persistence", "security", "system", "system-state-identity", "user"]
+    },
+    "link-secondary": {
+      "type": "string",
+      "description": "Optional secondary link-affinity — drives the half-node color in link-driver mode."
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Free-form tags for filtering. Common conventions: itm:<section>, persistence-primary, tamper-signal, per-user, rotation-fast, legacy-system."
+    },
+    "substrate": {
+      "type": "string",
+      "description": "The substrate this artifact lives in. Must match a file under data/substrates/.",
+      "enum": [
+        "windows-binary-cache",
+        "windows-disk-metadata",
+        "windows-ess",
+        "windows-evtx",
+        "windows-fat-metadata",
+        "windows-jumplist",
+        "windows-lnk",
+        "windows-ntfs-metadata",
+        "windows-prefetch",
+        "windows-pst",
+        "windows-recyclebin",
+        "windows-registry-hive",
+        "windows-sqlite",
+        "windows-text-log",
+        "windows-thumbcache"
+      ]
+    },
+    "substrate-instance": {
+      "type": "string",
+      "description": "The specific substrate instance name (e.g., 'SOFTWARE', 'NTUSER.DAT', 'Microsoft-Windows-Sysmon/Operational'). Free-form — naming is validated informally against the substrate definition's known-instances list if present."
+    },
+    "volatility": {
+      "type": "string",
+      "description": "Natural lifetime of the evidence — how long it persists independent of adversarial behavior. Permanent = requires destructive action to remove. Persistent = survives reboot but admin/user-mutable. Session-scoped = lost on logoff/reboot. Runtime = lost on process exit.",
+      "enum": ["permanent", "persistent", "session-scoped", "runtime"]
+    },
+    "interaction-required": {
+      "type": "string",
+      "description": "Whether the artifact's creation requires user involvement. None = kernel/service writes without any user context. User-session = requires a logged-in user session (but no specific user action). User-action = requires explicit user action (Explorer interaction, file open, etc.).",
+      "enum": ["none", "user-session", "user-action"]
+    },
+    "platform": {
+      "type": "object",
+      "description": "OS version range(s) where this artifact is present. Common keys are 'windows' and 'windows-server'; 'linux', 'macos', 'cloud', and 'note' are also accepted.",
+      "additionalProperties": true,
+      "properties": {
+        "windows":        { "$ref": "#/$defs/platformRangeOrLabel" },
+        "windows-server": { "$ref": "#/$defs/platformRangeOrLabel" },
+        "linux":          { "$ref": "#/$defs/platformRangeOrLabel" },
+        "macos":          { "$ref": "#/$defs/platformRangeOrLabel" },
+        "cloud":          { "$ref": "#/$defs/platformRangeOrLabel" },
+        "note":           { "type": "string" }
+      }
+    },
+    "location": {
+      "type": "object",
+      "description": "Where to find this artifact on disk / in memory. Open-shape — keys reflect whatever naming the container uses (path / hive / channel / event-id / addressing / note / live-access / etc).",
+      "additionalProperties": true
+    },
+    "fields": {
+      "type": "array",
+      "description": "The forensically-meaningful fields within this artifact. Each field describes where it lives, what it encodes, and optionally which concept(s) it references.",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/field" }
+    },
+    "observations": {
+      "type": "array",
+      "description": "Tier-1 single-artifact claims. Each entry names a forensic proposition, the Casey certainty ceiling this artifact alone achieves for it, and an optional confidence marker describing the epistemic status of the source knowledge.",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/observation" }
+    },
+    "anti-forensic": {
+      "type": "object",
+      "description": "Tamper posture of the artifact: how integrity is enforced, who can modify it, known cleaners, and signals that reveal tampering.",
+      "additionalProperties": true,
+      "properties": {
+        "integrity-mechanism": { "type": "string", "description": "How the substrate protects the record from modification (append-only, kernel-mediated, chunked checksums, none)." },
+        "write-privilege":     { "type": "string", "description": "Privilege level required to modify the artifact.", "enum": ["admin", "user", "service", "kernel-only", "unknown"] },
+        "known-cleaners":      { "type": "array", "items": { "type": "object" } },
+        "survival-signals":    { "type": "array", "items": { "type": ["string", "object"] } }
+      }
+    },
+    "provenance": {
+      "type": "array",
+      "description": "Source attribution. Each item is either a source-registry ID (string) or an object {source, section?, note?} for citing a specific part of a source. Every ID must resolve to an entry in schema/sources.yaml.",
+      "items": { "$ref": "#/$defs/provenanceRef" }
+    },
+    "exit-node": {
+      "description": "Exit-node claim: this artifact terminates a tier-2 convergence. Accepts either a bare boolean (legacy form — `false` implicit) or a structured object carrying the attribution required to defend the claim. Structured form is preferred for `is-terminus: true` — flipping the flag without sources/reasoning/implications is not supported because exit-node is an authored knowledge claim, not a derived property. Authorship typically cites tier-2/3 sources (methodology, peer-reviewed analysis, case studies).",
+      "oneOf": [
+        { "type": "boolean" },
+        {
+          "type": "object",
+          "required": ["is-terminus"],
+          "additionalProperties": false,
+          "properties": {
+            "is-terminus": {
+              "type": "boolean",
+              "description": "True iff this artifact is a reasoning-terminus for at least one convergence."
+            },
+            "terminates": {
+              "type": "array",
+              "description": "Convergence names this artifact closes (must match entries in convergences/).",
+              "items": { "type": "string" }
+            },
+            "sources": {
+              "type": "array",
+              "description": "Source IDs backing the exit-node claim. Typically tier-2/3 (methodology, peer-reviewed, case studies). Every ID must resolve in schema/sources.yaml. REQUIRED (non-empty) when is-terminus: true — a knowledge claim without attribution is incoherent. This is the ONLY per-field source requirement in the corpus; all other attribution is entity-level via provenance.",
+              "items": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+              "minItems": 1
+            },
+            "reasoning": {
+              "type": "string",
+              "description": "Why this artifact qualifies as a terminus — the chain-closure mechanism (what inputs it provides, why downstream correlation is unnecessary). REQUIRED when is-terminus: true.",
+              "minLength": 1
+            },
+            "implications": {
+              "type": "string",
+              "description": "Real-world forensic consequence — what an analyst can prove/report using this artifact as the chain terminus. The \"so what\" of the claim. REQUIRED when is-terminus: true.",
+              "minLength": 1
+            },
+            "preconditions": {
+              "type": "string",
+              "description": "Conditions under which the terminus claim holds (e.g. \"UserSid != S-1-5-18\" excludes system-account events)."
+            },
+            "identifier-terminals-referenced": {
+              "type": "array",
+              "description": "Which identifier-terminal concepts this artifact ties together (UserSID, DeviceSerial, VolumeGUID, EmailAddress, IPAddress, URL, etc.).",
+              "items": { "type": "string" }
+            },
+            "primary-source": {
+              "type": "string",
+              "description": "Single source ID (from schema/sources.yaml) identified during the exit-node audit as the strongest single-source attribution for this terminus claim. Must appear in `sources`.",
+              "pattern": "^[a-z0-9][a-z0-9-]*$"
+            },
+            "attribution-sentence": {
+              "type": "string",
+              "description": "Verbatim sentence extracted from primary-source during the exit-node audit that justifies the terminus claim in real-world forensic terms.",
+              "minLength": 1
+            }
+          },
+          "allOf": [
+            {
+              "if":   { "properties": { "is-terminus": { "const": true } } },
+              "then": { "required": ["sources", "reasoning", "implications"] }
+            }
+          ]
+        }
+      ]
+    }
+  },
+
+  "$defs": {
+
+    "platformRange": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "min":  { "type": ["string", "number"], "description": "Earliest supporting OS version (e.g., '7', 'Vista', '10', 'NT5.1'). String is acceptable because OS labels are not numeric-sortable in general." },
+        "max":  { "type": ["string", "number"], "description": "Latest supporting OS version (e.g., '11', '2022', 'N/A — Server-only feature')." },
+        "note": { "type": "string" }
+      }
+    },
+
+    "platformRangeOrLabel": {
+      "description": "Either a {min,max,note} object or a free-form label (e.g., 'N/A (client-only)', 'Server 2012+').",
+      "oneOf": [
+        { "$ref": "#/$defs/platformRange" },
+        { "type": "string" }
+      ]
+    },
+
+    "field": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["name", "location"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Field identifier — unique within this artifact."
+        },
+        "kind": {
+          "type": "string",
+          "description": "Field semantic kind. Affects downstream analytics. The enum reflects the observed vocabulary across the artifact corpus — see schema/concepts.yaml for concept kinds (identifier / value-type) which are distinct.",
+          "enum": [
+            "identifier", "path", "timestamp", "hash", "counter",
+            "flags", "flag", "content", "label", "enum", "json",
+            "record", "ciphertext", "url", "size", "status",
+            "hostname", "address", "port", "stacktrace", "version",
+            "binary", "policy", "command", "order", "checksum",
+            "timestamps", "reference", "ads", "state", "opcode",
+            "folder"
+          ]
+        },
+        "location": {
+          "type": "string",
+          "description": "Free-form description of where in the container this field lives (e.g., 'hive-path\\value', 'EventData → FieldName', 'offset 0x24')."
+        },
+        "type":       { "type": "string", "description": "Storage type if applicable (REG_DWORD, REG_SZ, uint32, FILETIME, etc.)." },
+        "encoding":   { "type": "string" },
+        "clock":      { "type": "string" },
+        "resolution": { "type": "string" },
+        "note":       { "type": "string" },
+        "update-rule":{ "type": "string" },
+        "references-data": {
+          "type": "array",
+          "description": "Concept(s) this field references. Each entry is validated against schema/concepts.yaml — unknown concepts or roles produce build warnings.",
+          "items": {
+            "type": "object",
+            "required": ["concept", "role"],
+            "properties": {
+              "concept": {
+                "type": "string",
+                "description": "Must match a concept in schema/concepts.yaml."
+              },
+              "role": {
+                "type": "string",
+                "description": "Must match one of that concept's declared roles."
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "observation": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["proposition", "ceiling"],
+      "properties": {
+        "proposition": {
+          "type": "string",
+          "description": "UPPER_SNAKE proposition label (e.g., CONFIGURED, EXECUTED, HAD_FILE, COMMUNICATED, HAD_CREDENTIAL).",
+          "pattern": "^[A-Z][A-Z0-9_]*$"
+        },
+        "ceiling": {
+          "type": "string",
+          "description": "Casey C-scale certainty ceiling: C1 (weakest) through C5 (strongest). A range like 'C3-C4' is allowed to indicate 'with corroboration'.",
+          "pattern": "^C[1-5](?:[–-]C[1-5])?(?:\\s*\\(.+\\))?$"
+        },
+        "confidence": {
+          "type": "string",
+          "description": "Epistemic status of the source knowledge supporting this observation. Orthogonal to Casey ceiling. Default 'established' when omitted.",
+          "enum": ["established", "debated", "preliminary", "unverified"],
+          "default": "established"
+        },
+        "debate-note": {
+          "type": "string",
+          "description": "When confidence is 'debated', a short narrative capturing where the disagreement sits (which sources disagree, what the contested interpretation is)."
+        },
+        "note":          { "type": "string" },
+        "qualifier-map": { "type": "object", "additionalProperties": true },
+        "preconditions": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+
+    "provenanceRef": {
+      "description": "Either a bare source-registry ID (string) or an object pointing at a specific section of a source.",
+      "oneOf": [
+        { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+        {
+          "type": "object",
+          "required": ["source"],
+          "additionalProperties": false,
+          "properties": {
+            "source":  { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$", "description": "Source-registry ID matching an entry in schema/sources.yaml." },
+            "section": { "type": "string", "description": "Specific section, page, or topic within the source that informs this reference." },
+            "note":    { "type": "string", "description": "Optional authorial note — e.g., 'primary authority' or 'disagrees with Smith (2021)'." }
+          }
+        }
+      ]
+    }
+  }
+}

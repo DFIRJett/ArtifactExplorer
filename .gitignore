@@ -1,0 +1,32 @@
+# Claude Code session state — per-user, never tracked
+.claude/
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temp files
+*.log
+*.tmp
+*.bak
+
+# Intermediate migration artifacts
+tools/_*.yaml

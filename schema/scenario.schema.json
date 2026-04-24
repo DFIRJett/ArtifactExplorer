@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/mondrianaire/DFIRCLI/blob/main/schema/scenario.schema.json",
+  "title": "DFIRCLI Scenario frontmatter",
+  "description": "Schema for the YAML frontmatter of a scenario file under data/scenarios/<name>.md. Scenarios describe a forensic convergence — an analyst walkthrough or pattern that links several artifacts through join-key concepts.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["name", "anchors"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Human-readable scenario title. Used verbatim in the scenarios picker UI.",
+      "minLength": 2
+    },
+    "anchors": {
+      "type": "object",
+      "description": "Exit-node anchors that frame the scenario. Minimum 2 total: one entry (investigation starting point) and at least one conclusion (attribution terminus). Every anchor must be an identifier-kind concept name or an artifact flagged exit-node.",
+      "required": ["entry", "conclusions"],
+      "additionalProperties": false,
+      "properties": {
+        "entry":       { "type": "string",  "description": "Single investigative starting-point exit-node." },
+        "conclusions": { "type": "array",   "description": "One or more attribution-terminus exit-nodes.", "items": { "type": "string" }, "minItems": 1 }
+      }
+    },
+    "severity": {
+      "type": "string",
+      "description": "Intended-use tier for the scenario. reference = demonstrates a canonical pattern; playbook = step-by-step investigative walkthrough; case-study = narrative-driven incident reconstruction.",
+      "enum": ["reference", "playbook", "case-study"]
+    },
+    "summary":   { "type": "string", "description": "Short overview (2–4 sentences)." },
+    "narrative": { "type": "string", "description": "Longer framing prose — the 'when to use this chain' rationale." },
+    "artifacts": {
+      "type": "object",
+      "description": "DEPRECATED — scheduled for sunset once every step populates `convergence:`. Today: UNION of artifacts across all steps (if stepwise) OR the overlay set. primary = must-have; corroborating = supplementary. Will be derived from each step's convergence.input-sources after authorship passes complete.",
+      "additionalProperties": false,
+      "properties": {
+        "primary":       { "type": "array", "items": { "type": "string" } },
+        "corroborating": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "join-keys": {
+      "type": "array",
+      "description": "DEPRECATED — scheduled for sunset. Derivable from the union of each step's convergence.join-chain once authorship is complete. Kept during migration as a narrative pointer to the concepts threading the scenario.",
+      "items": {
+        "type": "object",
+        "required": ["concept", "role"],
+        "properties": {
+          "concept": { "type": "string" },
+          "role":    { "type": "string" }
+        }
+      }
+    },
+    "steps": {
+      "type": "array",
+      "description": "Optional stepwise convergence-chain progression. Each step = one analyst question.",
+      "items": { "$ref": "#/$defs/step" }
+    },
+    "notes": { "type": "string" },
+    "provenance": {
+      "type": "array",
+      "description": "Source attribution. Each item is either a source-registry ID (string) or an object {source, section?, note?}. Every ID must resolve to an entry in schema/sources.yaml.",
+      "items": {
+        "oneOf": [
+          { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+          {
+            "type": "object",
+            "required": ["source"],
+            "additionalProperties": false,
+            "properties": {
+              "source":  { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+              "section": { "type": "string" },
+              "note":    { "type": "string" }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "$defs": {
+    "step": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["n", "question"],
+      "properties": {
+        "n": {
+          "type": "integer",
+          "description": "Step number (1-based, contiguous).",
+          "minimum": 1
+        },
+        "question": {
+          "type": "string",
+          "description": "The investigative question this step answers."
+        },
+        "artifacts": {
+          "type": "array",
+          "description": "DEPRECATED — derivable from the referenced convergence's input-sources once `convergence:` is populated. Retained for authoring convenience during migration.",
+          "items": { "type": "string" }
+        },
+        "join-key": {
+          "type": "object",
+          "description": "DEPRECATED — redundant with the referenced convergence's join-chain once `convergence:` is populated. Retained during migration.",
+          "required": ["concept", "role"],
+          "properties": {
+            "concept": { "type": "string" },
+            "role":    { "type": "string" }
+          }
+        },
+        "convergence": {
+          "type": "string",
+          "description": "Optional reference to a tier-2 convergence file under convergences/<name>.md. When present, this step is an instance of that convergence pattern."
+        },
+        "conclusion":  { "type": "string" },
+        "attribution": { "type": "string" },
+        "casey": {
+          "type": "string",
+          "description": "Casey C-level ceiling for this step (e.g., 'C3', 'C3–C4', 'C4 (with corroboration)').",
+          "pattern": "^C[1-5](?:[–-]C[1-5])?(?:\\s*\\(.+\\))?$"
+        },
+        "artifact-ids":   { "type": "array", "items": { "type": "string" } },
+        "artifact-names": { "type": "array", "items": { "type": "string" } },
+        "primary-source": {
+          "type": "string",
+          "description": "Single source ID (from schema/sources.yaml) identified during the walkthrough audit as the strongest single-source attribution for this step's claim. Parallels the exit-node + convergence-pivot audit fields.",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "attribution-sentence": {
+          "type": "string",
+          "description": "Verbatim sentence extracted from primary-source during the walkthrough audit that justifies this step's reasoning in real-world forensic terms. Should make the step's forensic conclusion defensible without reading the full source. APA-style citation anchored at the sentence end preferred per convention.",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

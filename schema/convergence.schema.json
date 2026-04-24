@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/mondrianaire/DFIRCLI/blob/main/schema/convergence.schema.json",
+  "title": "DFIRCLI Convergence frontmatter",
+  "description": "Schema for the YAML frontmatter of a convergence file under convergences/<name>.md. A convergence is a tier-2 multi-artifact join via shared identifier-concept values that yields a higher-level forensic claim.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["name", "yields"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Convergence identifier. Must match the filename without the .md extension.",
+      "pattern": "^[A-Z][A-Z0-9_]*(?:[-][a-zA-Z0-9_-]+)?$|^[a-z][a-z0-9-]*$"
+    },
+    "summary": {
+      "type": "string",
+      "description": "One-to-two sentence overview of what this convergence establishes and when it applies."
+    },
+    "inputs": {
+      "type": "array",
+      "description": "Input propositions this convergence requires. Each must be a proposition named in some artifact's observations[*].proposition.",
+      "items": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$" }
+    },
+    "input-sources": {
+      "type": "array",
+      "description": "Mapping of which artifacts contribute which input propositions.",
+      "items": {
+        "type": "object",
+        "required": ["proposition"],
+        "properties": {
+          "proposition": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$" },
+          "artifacts":   { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "join-chain": {
+      "type": "array",
+      "description": "Ordered list of concept-role pivots that thread the input artifacts together. Each step's `concept` must be identifier-kind per the concept registry. May be empty during initial extraction pending authorship.",
+      "items": {
+        "type": "object",
+        "required": ["concept"],
+        "properties": {
+          "concept": { "type": "string" },
+          "join-strength": {
+            "type": "string",
+            "description": "Grades how tight this pivot is. strong = globally-unique identifier (UserSID, DeviceSerial, MBRDiskSignature). moderate = session-unique or admin-mutable identifier (LogonSessionId, MachineNetBIOS). weak = heuristic/non-unique correlation (path-match, timestamp-proximity).",
+            "enum": ["strong", "moderate", "weak"]
+          },
+          "description": {
+            "type": "string",
+            "description": "One sentence or short paragraph explaining the forensic role this concept-pivot plays in THIS convergence's inference. Optional but strongly recommended (H-019) — structural enumeration of artifacts alone hides the 'why this join-key matters HERE' layer. Per-concept role descriptions live in concept files (generic); whole-convergence prose lives in notes/summary; this field is the middle layer."
+          },
+          "sources": {
+            "type": "array",
+            "description": "Source-registry IDs supporting THIS specific pivot's claim. Strongly recommended — convergence-level `provenance:` applies broadly, but each join-chain entry makes a pivot-specific assertion (e.g. 'MFTEntryReference is globally-unique per NTFS file') that needs its own attribution. Pick 1-3 sources from the convergence's provenance that directly back the pivot's description; do NOT re-enumerate the entire convergence provenance here.",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]*$"
+            }
+          },
+          "primary-source": {
+            "type": "string",
+            "description": "Single source ID (from schema/sources.yaml) identified during the convergence-pivot audit as the strongest single-source attribution for THIS pivot's claim. Must appear in `sources`. Parallels the exit-node audit field — one canonical citation per claim so an analyst can trace 'why does this join-key belong in this convergence?' to a specific document, not a pile.",
+            "pattern": "^[a-z0-9][a-z0-9-]*$"
+          },
+          "attribution-sentence": {
+            "type": "string",
+            "description": "Verbatim sentence extracted from primary-source during the convergence-pivot audit that justifies this pivot in real-world forensic terms. Should make the forensic relevance of the join-key defensible without reading the full source. Parallels the exit-node audit field.",
+            "minLength": 1
+          },
+          "artifacts-and-roles": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["artifact", "role"],
+              "properties": {
+                "artifact": { "type": "string" },
+                "role":     { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "exit-node": {
+      "description": "Terminal node(s) of the join-chain. Must be an identifier-kind concept name OR an artifact flagged `exit-node: true`. May be empty during initial extraction pending authorship. Accepts a single string when one terminus is authoritative, or an array when multiple distinct reasoning paths each close the convergence.",
+      "oneOf": [
+        { "type": "string" },
+        { "type": "array", "items": { "type": "string" } }
+      ]
+    },
+    "yields": {
+      "type": "object",
+      "description": "What this convergence produces — either a new higher-level proposition, or ceiling elevation on an existing proposition through corroboration.",
+      "required": ["mode"],
+      "oneOf": [
+        {
+          "required": ["mode", "proposition", "ceiling"],
+          "properties": {
+            "mode":            { "const": "new-proposition" },
+            "proposition":     { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$" },
+            "ceiling":         { "type": "string", "pattern": "^C[1-5](?:[–-]C[1-5])?(?:\\s*\\(.+\\))?$" },
+            "casey-rationale": { "type": "string", "description": "One-line justification for the ceiling assigned to the new proposition." },
+            "note":            { "type": "string" }
+          }
+        },
+        {
+          "required": ["mode", "elevates-proposition", "ceiling", "corroboration-strength"],
+          "properties": {
+            "mode":                   { "const": "ceiling-elevation" },
+            "elevates-proposition":   { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$" },
+            "ceiling":                { "type": "string", "pattern": "^C[1-5](?:[–-]C[1-5])?(?:\\s*\\(.+\\))?$" },
+            "corroboration-strength": { "type": "string", "enum": ["independent-subsystem", "same-subsystem"] },
+            "casey-rationale":        { "type": "string", "description": "One-line justification for WHY the corroborating sources earn the ceiling bump (e.g., 'kernel + EventLog Service are independent subsystems; agreement implies no single-point tamper vector')." },
+            "note":                   { "type": "string" }
+          }
+        }
+      ]
+    },
+    "via-artifacts": {
+      "type": "array",
+      "description": "DEPRECATED — scheduled for sunset once join-chain is authored for every convergence. Today: legacy/narrative list preserved from the original per-artifact extends-to declarations.",
+      "items": { "type": "string" }
+    },
+    "degradation-paths": {
+      "type": "array",
+      "description": "Explicit fallbacks when an input artifact is missing (cleaner ran, acquisition partial).",
+      "items": {
+        "type": "object",
+        "required": ["if-missing"],
+        "properties": {
+          "if-missing":         { "type": "string" },
+          "fallback-artifact":  { "type": "string" },
+          "fallback-artifacts": { "type": "array", "items": { "type": "string" } },
+          "ceiling-drop":       { "type": "string" },
+          "note":               { "type": "string" }
+        }
+      }
+    },
+    "notes": {
+      "type": "array",
+      "description": "DEPRECATED for new entries — scheduled to fold into `summary:` once each convergence is properly authored. Today: free-form note aggregation from the original per-artifact extends-to text.",
+      "items": { "type": "string" }
+    },
+    "provenance": {
+      "type": "array",
+      "description": "Source attribution. Each item is either a source-registry ID (string) or an object {source, section?, note?}. Every ID must resolve to an entry in schema/sources.yaml.",
+      "items": {
+        "oneOf": [
+          { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+          {
+            "type": "object",
+            "required": ["source"],
+            "additionalProperties": false,
+            "properties": {
+              "source":  { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+              "section": { "type": "string" },
+              "note":    { "type": "string" }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

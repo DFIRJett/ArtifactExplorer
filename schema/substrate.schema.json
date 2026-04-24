@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/mondrianaire/DFIRCLI/blob/main/schema/substrate.schema.json",
+  "title": "DFIRCLI Container frontmatter",
+  "description": "Schema for the YAML frontmatter of a substrate file under data/substrates/<name>.md. Each file defines one substrate (binary-structured-file / plaintext-log / etc) that hosts artifacts.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["name", "kind", "substrate-class"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Container-class identifier. Must match the filename without .md and match every artifact's substrate field that lives here.",
+      "pattern": "^[a-z][a-z0-9-]*$"
+    },
+    "kind": {
+      "type": "string",
+      "description": "Substrate type — governs how the container is acquired and parsed.",
+      "enum": [
+        "binary-structured-file",
+        "plaintext-log",
+        "sqlite-database",
+        "ese-database",
+        "database-file",
+        "filesystem-metadata",
+        "disk-region",
+        "disk-substrate"
+      ]
+    },
+    "substrate-class": {
+      "type": "string",
+      "description": "Taxonomic substrate-class. Slash-path form (Parent/Child) groups multiple sibling classes under one parent for substrate-view mother synthesis. Drives coloring and hull clustering. Old flat values retained as deprecated-aliases for one migration cycle.",
+      "enum": [
+        "Registry", "Event Log", "Text Log", "Database",
+        "Filesystem/Artifact", "Filesystem/Metadata", "Filesystem/Disk",
+        "Application Cache",
+        "Filesystem Metadata", "Filesystem Artifact", "Disk Metadata"
+      ]
+    },
+    "aliases":         { "type": "array", "items": { "type": "string" } },
+    "format":          { "type": "object", "additionalProperties": true, "description": "Format descriptors: magic, endianness, version, authoritative-spec, etc." },
+    "structure":       { "type": "object", "additionalProperties": true, "description": "Internal structure (header / body / cell-types / addressing)." },
+    "persistence":     { "type": "object", "additionalProperties": true, "description": "Live-system location, rotation, retention, acquisition methods." },
+    "retention":       { "type": "object", "additionalProperties": true },
+    "nested-containers":{ "type": "array", "items": { "type": "object", "additionalProperties": true } },
+    "parsers":         { "type": "array", "items": { "type": "object", "additionalProperties": true }, "description": "Known parsers — name + strengths + weaknesses." },
+    "forensic-relevance": {
+      "description": "Structured or free-form notes on forensic relevance (either an array of keyed objects or a single object).",
+      "oneOf": [
+        { "type": "array", "items": { "type": "object", "additionalProperties": true } },
+        { "type": "object", "additionalProperties": true }
+      ]
+    },
+    "integrity":       { "type": "object", "additionalProperties": true },
+    "anti-forensic-concerns": { "type": "array", "items": { "type": ["string", "object"] } },
+    "known-artifacts": {
+      "description": "Roster of authored + known-unwritten artifacts that belong to this container. Accepts either a flat list of names or an {authored, unwritten} split. Build validates authored names against actual files; unwritten names produce graph ghost nodes.",
+      "oneOf": [
+        { "type": "array", "items": { "type": ["string", "object"] } },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "authored":   { "type": ["array", "null"], "items": { "type": ["string", "object"] } },
+            "unwritten":  { "type": ["array", "null"], "items": { "type": ["string", "object"] } }
+          }
+        }
+      ]
+    },
+    "cross-references": { "type": "object", "additionalProperties": true },
+    "platform-scope":   { "type": "object", "additionalProperties": true },
+    "instance-implications": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Per substrate-instance concept implications — concepts the substrate imposes on every artifact in that instance, independent of the artifact's own references-data."
+    },
+    "provenance": {
+      "type": "array",
+      "description": "Source attribution at the substrate level. Each item is either a source-registry ID (string) or an object {source, section?, note?}. Every ID must resolve to an entry in schema/sources.yaml. Substrate-level sources are format specs, parser catalogs, acquisition-method references, and other documentation that informs the substrate (container format) itself rather than specific artifacts within.",
+      "items": {
+        "oneOf": [
+          { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+          {
+            "type": "object",
+            "required": ["source"],
+            "additionalProperties": false,
+            "properties": {
+              "source":  { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+              "section": { "type": "string" },
+              "note":    { "type": "string" }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

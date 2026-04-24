@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Force experiment — ForceAtlas2 vs d3-force</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/graphology@0.25.4/dist/graphology.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/graphology-library/dist/graphology-library.min.js"></script>
+<style>
+  :root {
+    --bg: #0b0d10;
+    --fg: #e5e5e5;
+    --dim: #8a8f98;
+    --accent: #ffd166;
+    --panel: #14171c;
+    --border: #24282f;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--fg);
+    font: 13px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    height: 100%; overflow: hidden; }
+  #wrap { display: grid; grid-template-rows: 44px 1fr 160px; height: 100vh; }
+  header { display: flex; align-items: center; gap: 18px; padding: 0 18px;
+    background: var(--panel); border-bottom: 1px solid var(--border); }
+  header h1 { font-size: 13px; font-weight: 600; margin: 0; }
+  header .meta { color: var(--dim); font-size: 11px; }
+  header select, header button, header label { background: var(--panel);
+    color: var(--fg); border: 1px solid var(--border); border-radius: 3px;
+    padding: 4px 8px; font: inherit; cursor: pointer; }
+  header button.primary { background: var(--accent); color: #222; font-weight: 600; border-color: transparent; }
+  header input[type=range] { width: 100px; accent-color: var(--accent); }
+  header input[type=checkbox] { accent-color: var(--accent); }
+  main { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border);
+    overflow: hidden; }
+  .pane { background: var(--bg); position: relative; overflow: hidden; }
+  .pane header.pane-title { position: absolute; top: 8px; left: 12px; right: auto;
+    background: rgba(20,23,28,0.85); padding: 4px 10px; border-radius: 3px;
+    border: 1px solid var(--border); z-index: 5; color: var(--fg);
+    font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; }
+  .pane svg { width: 100%; height: 100%; display: block; }
+  .pane .info { position: absolute; bottom: 8px; left: 12px; color: var(--dim);
+    font-size: 11px; background: rgba(20,23,28,0.85); padding: 4px 8px; border-radius: 3px; }
+  footer { background: var(--panel); border-top: 1px solid var(--border);
+    padding: 10px 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+    font-size: 12px; overflow-y: auto; }
+  footer h3 { margin: 0 0 4px; font-size: 11px; color: var(--accent);
+    text-transform: uppercase; letter-spacing: 0.05em; }
+  footer p { margin: 2px 0; color: var(--dim); line-height: 1.5; }
+  footer kbd { background: #222; color: var(--fg); padding: 1px 5px; border-radius: 2px;
+    font-size: 10.5px; font-family: ui-monospace, SFMono-Regular, monospace; }
+  .node { stroke: rgba(0,0,0,0.4); stroke-width: 0.5; }
+  .node.artifact { fill: #7f9bc2; }
+  .node.concept { fill: #cde1f5; }
+  .node.concept.value-type { fill: #e3b5ff; }
+  .node.exit-node { stroke: var(--accent); stroke-width: 1.6; }
+  .edge { fill: none; stroke: #4a5058; stroke-width: 0.8; stroke-opacity: 0.5; }
+  .label { fill: var(--fg); font-size: 9px; pointer-events: none;
+    paint-order: stroke fill; stroke: var(--bg); stroke-width: 2.5; stroke-linejoin: round; }
+  .label.concept { fill: #cde1f5; font-weight: 600; }
+  .perf { position: absolute; top: 8px; right: 12px; background: rgba(20,23,28,0.85);
+    padding: 4px 8px; border-radius: 3px; font-size: 10.5px; color: var(--dim);
+    font-family: ui-monospace, SFMono-Regular, monospace; }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <header>
+    <h1>Force experiment — ForceAtlas2 (Graphology) vs d3-force</h1>
+    <span class="meta" id="meta">loading data.json…</span>
+    <span style="flex:1"></span>
+    <label title="LinLog = logarithmic attraction; dramatically less spaghetti on dense graphs"><input type="checkbox" id="linlog" checked> LinLog</label>
+    <label title="Strong gravity keeps disconnected / weakly-connected nodes from drifting off-screen"><input type="checkbox" id="strongGravity" checked> Strong gravity</label>
+    <label title="Dissuade hubs: pushes hubs apart so they don't collide at the center">
+      <input type="checkbox" id="dissuadeHubs"> Dissuade hubs</label>
+    <label>gravity <input type="range" id="gravity" min="0.1" max="5" step="0.1" value="1"></label>
+    <label>scaling <input type="range" id="scaling" min="1" max="20" step="1" value="10"></label>
+    <label>iterations <input type="range" id="iterations" min="50" max="1000" step="50" value="400"></label>
+    <button class="primary" id="rerun">Re-run FA2</button>
+    <button id="toggleConcepts">Toggle value-type concepts</button>
+  </header>
+  <main>
+    <div class="pane" id="pane-d3">
+      <header class="pane-title">d3-force (current viewer algorithm)</header>
+      <svg id="svg-d3"></svg>
+      <div class="perf" id="perf-d3"></div>
+      <div class="info" id="info-d3"></div>
+    </div>
+    <div class="pane" id="pane-fa2">
+      <header class="pane-title">ForceAtlas2 (Graphology) — proposed</header>
+      <svg id="svg-fa2"></svg>
+      <div class="perf" id="perf-fa2"></div>
+      <div class="info" id="info-fa2"></div>
+    </div>
+  </main>
+  <footer>
+    <div>
+      <h3>What to compare</h3>
+      <p>• <b>Core/periphery hierarchy</b> — does one algorithm push hub nodes to the middle and leaves to the edge, or does it flatten everything into a blob?</p>
+      <p>• <b>Cluster separation</b> — do related artifacts (e.g., all USB-class artifacts) cluster visibly, or do they scatter?</p>
+      <p>• <b>Edge crossings / spaghetti</b> — count visible crossings at a quick glance. Lower = better readability.</p>
+      <p>• <b>Label crowding</b> — fewer overlapping labels at the same zoom = better layout.</p>
+    </div>
+    <div>
+      <h3>ForceAtlas2 knobs</h3>
+      <p>• <b>LinLog</b>: logarithmic attraction — compresses dense clusters so outer structure is visible. <b>The single biggest spaghetti-reduction lever.</b></p>
+      <p>• <b>Strong gravity</b>: keeps loosely-connected nodes from drifting off-canvas. On by default for dense graphs.</p>
+      <p>• <b>Dissuade hubs</b>: repels hubs from each other — good when your hubs are mutually-exclusive (substrate classes). Try toggling it for your corpus.</p>
+      <p>• <b>Gravity / scaling / iterations</b>: fine-tuning. Defaults land at 400 iterations, gravity 1, scaling 10.</p>
+    </div>
+  </footer>
+</div>
+
+<script>
+const D = { nodes: null, links: null };
+let conceptsVisible = true;
+
+d3.json('data.json').then(data => {
+  D.nodes = data.graph.nodes.filter(n => n.kind === 'artifact' || n.kind === 'concept');
+  D.links = data.graph.links.filter(l => {
+    const s = typeof l.source === 'object' ? l.source.id : l.source;
+    const t = typeof l.target === 'object' ? l.target.id : l.target;
+    const sn = D.nodes.find(n => n.id === s);
+    const tn = D.nodes.find(n => n.id === t);
+    return sn && tn;
+  });
+  document.getElementById('meta').textContent =
+    `${D.nodes.length} nodes, ${D.links.length} links`;
+
+  runD3Force();
+  runFA2();
+
+  document.getElementById('rerun').addEventListener('click', runFA2);
+  document.getElementById('toggleConcepts').addEventListener('click', () => {
+    conceptsVisible = !conceptsVisible;
+    runD3Force();
+    runFA2();
+  });
+});
+
+// =====================================================================
+//  D3-FORCE PANEL — mimics the current viewer's force setup
+// =====================================================================
+function runD3Force() {
+  const t0 = performance.now();
+  const svg = d3.select('#svg-d3');
+  svg.selectAll('*').remove();
+  const { width, height } = svg.node().getBoundingClientRect();
+
+  const visibleNodes = filterNodes();
+  const visibleLinks = filterLinks(visibleNodes);
+  const nodes = visibleNodes.map(n => ({ ...n }));
+  const nodeById = new Map(nodes.map(n => [n.id, n]));
+  const links = visibleLinks.map(l => ({
+    source: typeof l.source === 'object' ? l.source.id : l.source,
+    target: typeof l.target === 'object' ? l.target.id : l.target
+  }));
+
+  const g = svg.append('g');
+  const zoom = d3.zoom().on('zoom', e => g.attr('transform', e.transform));
+  svg.call(zoom);
+
+  const edgeSel = g.append('g').selectAll('line').data(links).join('line').attr('class', 'edge');
+  const nodeSel = g.append('g').selectAll('circle').data(nodes).join('circle')
+    .attr('class', d => `node ${d.kind}${d.kind === 'concept' && d['concept-kind'] === 'value-type' ? ' value-type' : ''}${d['is-exit-node'] ? ' exit-node' : ''}`)
+    .attr('r', d => d.kind === 'artifact' ? 3.5 : 5);
+  const labelSel = g.append('g').selectAll('text').data(nodes).join('text')
+    .attr('class', d => `label ${d.kind}`)
+    .attr('text-anchor', 'middle').attr('dy', -6)
+    .text(d => d.kind === 'concept' ? d.name : '');
+
+  const sim = d3.forceSimulation(nodes)
+    .force('charge', d3.forceManyBody().strength(-55))
+    .force('link', d3.forceLink(links).id(d => d.id).distance(28))
+    .force('center', d3.forceCenter(width / 2, height / 2))
+    .force('collide', d3.forceCollide().radius(6));
+
+  sim.on('tick', () => {
+    edgeSel
+      .attr('x1', d => d.source.x).attr('y1', d => d.source.y)
+      .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
+    nodeSel.attr('cx', d => d.x).attr('cy', d => d.y);
+    labelSel.attr('x', d => d.x).attr('y', d => d.y);
+  });
+  sim.on('end', () => {
+    const t1 = performance.now();
+    document.getElementById('perf-d3').textContent = `${(t1 - t0).toFixed(0)}ms settle`;
+    fitToView(svg, g, nodes);
+  });
+
+  setTimeout(() => {
+    const t1 = performance.now();
+    document.getElementById('perf-d3').textContent = `${(t1 - t0).toFixed(0)}ms (cold)`;
+    fitToView(svg, g, nodes);
+  }, 1500);
+
+  document.getElementById('info-d3').innerHTML =
+    `${nodes.length} nodes · ${links.length} edges · Velocity Verlet / many-body -55 / link 28 / collide 6`;
+}
+
+// =====================================================================
+//  FORCEATLAS2 PANEL — graphology-layout-forceatlas2
+// =====================================================================
+function runFA2() {
+  const svg = d3.select('#svg-fa2');
+  svg.selectAll('*').remove();
+  const { width, height } = svg.node().getBoundingClientRect();
+
+  const visibleNodes = filterNodes();
+  const visibleLinks = filterLinks(visibleNodes);
+
+  // Graphology graph construction. The graphology UMD exposes the Graph
+  // class directly as `window.graphology` (also accessible as
+  // `graphology.Graph`). graphology-library provides layout.forceAtlas2.
+  const Graph = (typeof graphology === "function") ? graphology : graphology.Graph;
+  const g = new Graph();
+  for (const n of visibleNodes) {
+    g.addNode(n.id, {
+      // small random init so FA2 has non-zero derivative
+      x: (Math.random() - 0.5) * 100,
+      y: (Math.random() - 0.5) * 100,
+      size: n.kind === 'artifact' ? 3.5 : 5,
+      kind: n.kind
+    });
+  }
+  for (const l of visibleLinks) {
+    const s = typeof l.source === 'object' ? l.source.id : l.source;
+    const t = typeof l.target === 'object' ? l.target.id : l.target;
+    if (s === t) continue;
+    if (!g.hasEdge(s, t)) g.addEdge(s, t);
+  }
+
+  const settings = {
+    linLogMode: document.getElementById('linlog').checked,
+    strongGravityMode: document.getElementById('strongGravity').checked,
+    outboundAttractionDistribution: false,
+    adjustSizes: true,
+    edgeWeightInfluence: 1,
+    barnesHutOptimize: true,
+    barnesHutTheta: 0.5,
+    scalingRatio: +document.getElementById('scaling').value,
+    gravity: +document.getElementById('gravity').value,
+    slowDown: 1
+  };
+  if (document.getElementById('dissuadeHubs').checked) settings.outboundAttractionDistribution = true;
+
+  const iterations = +document.getElementById('iterations').value;
+  const t0 = performance.now();
+  // graphology-library exposes FA2 at graphologyLibrary.layout.forceAtlas2
+  const FA2 = window.graphologyLibrary.layout.forceAtlas2;
+  FA2.assign(g, { iterations, settings });
+  const t1 = performance.now();
+
+  // Render with D3 using FA2-computed positions
+  const nodes = visibleNodes.map(n => {
+    const attr = g.getNodeAttributes(n.id);
+    return { ...n, x: attr.x, y: attr.y };
+  });
+  const nodeById = new Map(nodes.map(n => [n.id, n]));
+  const links = visibleLinks.map(l => {
+    const s = typeof l.source === 'object' ? l.source.id : l.source;
+    const t = typeof l.target === 'object' ? l.target.id : l.target;
+    return { source: nodeById.get(s), target: nodeById.get(t) };
+  }).filter(l => l.source && l.target);
+
+  const root = svg.append('g');
+  const zoom = d3.zoom().on('zoom', e => root.attr('transform', e.transform));
+  svg.call(zoom);
+
+  root.append('g').selectAll('line').data(links).join('line').attr('class', 'edge')
+    .attr('x1', d => d.source.x).attr('y1', d => d.source.y)
+    .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
+  root.append('g').selectAll('circle').data(nodes).join('circle')
+    .attr('class', d => `node ${d.kind}${d.kind === 'concept' && d['concept-kind'] === 'value-type' ? ' value-type' : ''}${d['is-exit-node'] ? ' exit-node' : ''}`)
+    .attr('cx', d => d.x).attr('cy', d => d.y)
+    .attr('r', d => d.kind === 'artifact' ? 3.5 : 5);
+  root.append('g').selectAll('text').data(nodes).join('text')
+    .attr('class', d => `label ${d.kind}`)
+    .attr('x', d => d.x).attr('y', d => d.y - 6)
+    .attr('text-anchor', 'middle')
+    .text(d => d.kind === 'concept' ? d.name : '');
+
+  fitToView(svg, root, nodes);
+  document.getElementById('perf-fa2').textContent =
+    `${(t1 - t0).toFixed(0)}ms / ${iterations} iter`;
+  document.getElementById('info-fa2').innerHTML =
+    `${nodes.length} nodes · ${links.length} edges · ` +
+    `LinLog ${settings.linLogMode ? 'ON' : 'off'} · ` +
+    `strong-grav ${settings.strongGravityMode ? 'ON' : 'off'} · ` +
+    `hubs ${settings.outboundAttractionDistribution ? 'dissuaded' : 'normal'} · ` +
+    `g=${settings.gravity} · s=${settings.scalingRatio}`;
+}
+
+function filterNodes() {
+  return D.nodes.filter(n => {
+    if (!conceptsVisible && n.kind === 'concept' && n['concept-kind'] === 'value-type') return false;
+    return true;
+  });
+}
+function filterLinks(visibleNodes) {
+  const ids = new Set(visibleNodes.map(n => n.id));
+  return D.links.filter(l => {
+    const s = typeof l.source === 'object' ? l.source.id : l.source;
+    const t = typeof l.target === 'object' ? l.target.id : l.target;
+    return ids.has(s) && ids.has(t);
+  });
+}
+function fitToView(svg, g, nodes) {
+  const xs = nodes.map(n => n.x).filter(v => !isNaN(v));
+  const ys = nodes.map(n => n.y).filter(v => !isNaN(v));
+  if (!xs.length) return;
+  const { width, height } = svg.node().getBoundingClientRect();
+  const [x0, x1] = d3.extent(xs), [y0, y1] = d3.extent(ys);
+  const w = x1 - x0 || 1, h = y1 - y0 || 1;
+  const pad = 40;
+  const k = Math.min((width - 2 * pad) / w, (height - 2 * pad) / h);
+  const tx = width / 2 - ((x0 + x1) / 2) * k;
+  const ty = height / 2 - ((y0 + y1) / 2) * k;
+  g.attr('transform', `translate(${tx},${ty}) scale(${k})`);
+}
+</script>
+</body>
+</html>

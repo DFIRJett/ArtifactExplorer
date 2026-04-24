@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/mondrianaire/DFIRCLI/blob/main/schema/concept.schema.json",
+  "title": "DFIRCLI Concept frontmatter",
+  "description": "Schema for the YAML frontmatter of a concept file under concepts/<Name>.md. Each file defines one forensic concept that artifacts reference via references-data entries.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["name", "kind", "description"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Concept identifier. Must match the filename without .md and match the concept name used in artifact references-data entries.",
+      "pattern": "^[A-Z][A-Za-z0-9]*$"
+    },
+    "kind": {
+      "type": "string",
+      "description": "identifier = globally-unique forensic key (useful as cross-artifact join). value-type = reusable non-unique value (paths, URLs, hashes — shared across artifacts but not identity-defining).",
+      "enum": ["identifier", "value-type"]
+    },
+    "lifetime": {
+      "type": "string",
+      "description": "Natural lifetime of instances of this concept. Permanent = resolves to a durable real-world entity. Persistent = stable across reboot but admin-mutable. Session-scoped = unique-per-boot. Runtime = unique-per-process.",
+      "enum": ["permanent", "persistent", "session-scoped", "runtime"]
+    },
+    "description": {
+      "type": "string",
+      "description": "Short prose description — what this concept represents and what makes it distinct."
+    },
+    "link-affinity": {
+      "type": "string",
+      "description": "Primary link-affinity for concept rendering. Same enum as artifact.link."
+    },
+    "link-affinity-secondary": { "type": "string" },
+    "canonical-format": {
+      "type": "string",
+      "description": "The canonical text form or structural notation for this concept (e.g., 'S-1-5-21-<...>' for UserSID, 'SHA-256 hex' for ExecutableHash)."
+    },
+    "aliases": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "roles": {
+      "type": "array",
+      "description": "The semantic roles this concept can play when referenced by an artifact. The `id` is the role token used in references-data.",
+      "items": {
+        "type": "object",
+        "required": ["id", "description"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "camelCase role identifier.",
+            "pattern": "^[a-z][A-Za-z0-9]*$"
+          },
+          "description": { "type": "string" }
+        }
+      }
+    },
+    "known-containers": {
+      "type": "array",
+      "description": "Artifact names expected to reference this concept. Present purely as documentation — the build does not require these to exist.",
+      "items": { "type": "string" }
+    },
+    "provenance": {
+      "type": "array",
+      "description": "Source attribution. Each item is either a source-registry ID (string) or an object {source, section?, note?}. Every ID must resolve to an entry in schema/sources.yaml.",
+      "items": {
+        "oneOf": [
+          { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+          {
+            "type": "object",
+            "required": ["source"],
+            "additionalProperties": false,
+            "properties": {
+              "source":  { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+              "section": { "type": "string" },
+              "note":    { "type": "string" }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

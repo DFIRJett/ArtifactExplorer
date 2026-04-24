@@ -1,22 +1,5 @@
 <!doctype html>
-<!--
-  ============================================================================
-  CLEANUP MARKER CONVENTION (established 2026-04-24)
-  ============================================================================
-  Use `CLEANUP:` (uppercase, with colon) to flag spots that need attention.
-  Surface every marker with:    grep -n "CLEANUP:" viewer/index.html
 
-  Optional sub-tags after the colon:
-    CLEANUP: dead-code     — unused helpers, unreachable branches, shim DOM
-    CLEANUP: extract       — function/class is too big; split it
-    CLEANUP: dup           — copy-paste between similar handlers
-    CLEANUP: stale-comment — comment no longer matches the code
-    CLEANUP: deferred      — known shortcut (setTimeout, polling, magic#)
-
-  Example:    // CLEANUP: dup — same hover wiring duplicated in substrateView
-              // CLEANUP: deferred — replace 800ms polling with MutationObserver
-  ============================================================================
--->
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -34,17 +17,12 @@
       --accent-dim: #4a7aa3;
       --stroke: #2c2c30;
       --quadrant: #303034;
-      /* Permanent left sidebar — reserves layout width across all views.
-         Added in refactor R1. Canvas + floating panels position against it. */
+      
       --sidebar-width: 420px;
       --right-sidebar-width: clamp(280px, 17vw, 340px);
       --top-bar-height: 44px;
     }
-    /* Auto-resize sidebar based on the active pane's content needs.
-       Pair Inspector caps its own content at 420px, so a wider dock
-       just leaves dead space; shrink to match. Scenarios panel benefits
-       from the wider view for cards + walkthrough. Reduced 2026-04-23
-       per user feedback: widths were eating too much canvas space. */
+    
     body[data-right-pane="pair"] {
       --right-sidebar-width: clamp(300px, 18vw, 360px);
     }
@@ -60,7 +38,6 @@
       color: var(--ink);
     }
 
-    /* ---- Top bar ---- */
     #top-bar {
       position: fixed;
       top: 0; left: 0; right: 0;
@@ -103,9 +80,6 @@
       font: inherit; font-size: 12px;
     }
 
-    /* ---- Left dock — permanent sidebar across all views. Contains
-       header / view-summary / inspector / tool pane (Config | Pair |
-       Scenarios) / legend. Takes real layout width; canvas shrinks. */
     #left-dock {
       position: fixed;
       top: var(--top-bar-height); left: 0; bottom: 0;
@@ -129,10 +103,7 @@
       flex: 0 0 auto;
     }
     #left-dock .dock-section:last-child { border-bottom: none; }
-    /* Inspector + toolpane share the leftover vertical space with a 2:1
-       split (Inspector gets the bigger slice because selection detail is
-       the primary use). Each scrolls independently — a long tool-pane or
-       long inspector content doesn't push the other off-screen. */
+    
     #left-dock .dock-inspector-section {
       flex: 2 1 0; min-height: 0;
       overflow-y: auto;
@@ -141,8 +112,7 @@
       flex: 1 1 0; min-height: 0;
       overflow-y: auto;
     }
-    /* View-summary section — hosts the selected-node id card (hero + one-line
-       betweenness). Promoted from compact stats strip to full id-card home. */
+    
     #left-dock .dock-view-summary-section {
       padding: 10px 14px;
       font-size: 12px;
@@ -152,8 +122,7 @@
       max-height: 260px;
       overflow-y: auto;
     }
-    /* Mirror hero styles into the view-summary host so the id card renders
-       identically whether it lives here or (legacy path) in dock-inspector. */
+    
     #dock-view-summary .hero {
       margin: 0 0 6px 0; padding: 10px 12px;
       background: linear-gradient(180deg, #17212d, #0f1720);
@@ -169,10 +138,7 @@
     #dock-view-summary .kind-swatch {
       flex-shrink: 0;
     }
-    /* Kind-based hero frame accents — subtle border-color shifts so the
-       hero card itself visually encodes the node kind. Artifact gets a
-       solid accent border (container feel); value-type gets a dashed
-       border (signals "class, not instance"); identifier gets a hull-ring. */
+    
     #dock-view-summary .hero-container[data-kind="artifact"] {
       border-left-width: 3px;
       border-left-color: var(--accent);
@@ -186,9 +152,7 @@
       border-left-width: 3px;
       border-left-color: #c074ff;
     }
-    /* Canvas-level — stronger distinction for value-type concepts. Dashed
-       diamond outline so they're visually separated from identifier
-       concepts (which render as solid circles with halo). */
+    
     svg g.node.node-concept .node-shape.value-type {
       stroke-dasharray: 3 2;
       stroke-width: 1.5;
@@ -227,9 +191,7 @@
       padding: 0 4px; min-width: 32px; text-align: center;
       font-variant-numeric: tabular-nums;
     }
-    /* Pair-Inspector mirror buttons in the hero — match the left-pane
-       Set-as-A (cyan) / Set-as-B (amber) color scheme so the two entry
-       points read as functionally identical. */
+    
     .hero-pair-btn {
       background: transparent; color: var(--ink-dim);
       border: 1px solid var(--stroke); border-radius: 3px;
@@ -265,10 +227,6 @@
       line-height: 1.7;
     }
 
-    /* ---- Right dock — appears for non-node views (Pair Inspector, Scenarios).
-       Hidden by default; `body.right-dock-open` reveals it and shrinks the
-       view container's right inset accordingly. The left #dock-inspector
-       stays dedicated to single-node detail; everything else lives here. */
     #right-dock {
       position: fixed;
       top: var(--top-bar-height); right: 0; bottom: 0;
@@ -304,8 +262,6 @@
       padding: 10px 14px;
     }
 
-    /* Canvas-rotation knob — fixed to bottom-right of the viewport,
-       sits above the canvas but stays unaffected by canvas rotation. */
     #canvas-rotate-knob {
       position: fixed;
       bottom: 16px;
@@ -330,13 +286,12 @@
     #canvas-rotate-knob svg .knob-label {
       fill: var(--ink-dim); font-size: 10px; font-family: 'Menlo', monospace;
     }
-    /* Rotated-canvas transition — smooth pivot when angle changes. */
+    
     #view-container svg {
       transition: transform 0.25s ease;
       transform-origin: 50% 50%;
     }
 
-    /* ---- View container ---- */
     #view-container {
       position: fixed;
       top: var(--top-bar-height); left: var(--sidebar-width); right: var(--right-sidebar-width); bottom: 0;
@@ -347,12 +302,7 @@
       width: 100%;
       height: 100%;
     }
-    /* Saturation dial — applied only to BASE node/edge paint so the
-       canvas reads as muted-but-distinct, while every highlight class
-       (path-hit, step-ultra, step-hover, spine-lit, end-node-twinkle,
-       scenario-lit*, etc.) keeps full saturation. The outer SVG used
-       to carry filter: saturate(0.5) but it compounded with walkthrough
-       dim filters and washed out highlights — scoped down 2026-04-24. */
+    
     #view-container svg .node-shape:not(.path-hit):not(.path-start):not(.path-end):not(.step-ultra):not(.step-hover):not(.spine-lit):not(.end-node-twinkle):not(.scenario-lit):not(.scenario-lit-focus):not(.scenario-lit-primary):not(.scenario-lit-corroborating):not(.scenario-lit-concept):not(.ultrasuperhighlight) {
       filter: saturate(0.5);
     }
@@ -362,7 +312,6 @@
     #view-container .cursor-grab { cursor: grab; }
     #view-container .cursor-grab:active { cursor: grabbing; }
 
-    /* ---- Panels ---- */
     .panel {
       position: fixed;
       background: var(--panel);
@@ -374,8 +323,7 @@
       backdrop-filter: blur(10px);
       z-index: 5;
     }
-    /* Tool pane (#dock-toolpane) internal styling — Config / Pair / Scenarios
-       mutually-exclusive pages. Active page is driven by setToolPaneMode(). */
+    
     #dock-toolpane .tool-pane-header {
       font-size: 10.5px; font-weight: 600;
       color: var(--accent);
@@ -396,8 +344,6 @@
       border: 1px solid var(--stroke); font-size: 12px;
     }
 
-    /* Inspector styles — selected artifact / concept / edge detail rendered
-       inside the permanent #dock-inspector sidebar section. */
     #dock-inspector .btw-top-right {
       position: absolute; top: 12px; right: 44px;
       font-weight: 700; font-size: 12px; color: #ffd454;
@@ -440,8 +386,7 @@
       text-transform: uppercase; letter-spacing: 0.06em;
       font-weight: 500; margin-top: 2px; opacity: 0.55;
     }
-    /* Advanced-metadata disclosure at the bottom of the artifact details
-       panel. Native <details>/<summary> for collapse; custom chevron. */
+    
     #dock-inspector details.details-advanced {
       margin-top: 14px; padding-top: 10px; border-top: 1px solid #253244;
     }
@@ -464,8 +409,6 @@
     #dock-inspector details.details-advanced[open] > summary::before { transform: rotate(90deg); color: var(--ink-dim); }
     #dock-inspector details.details-advanced > .advanced-body { margin-top: 6px; }
 
-    /* Sources block — bibliographic references at the bottom of each
-       artifact's details panel. Authored in frontmatter `sources:`. */
     #dock-inspector .details-sources {
       margin-top: 18px;
       padding-top: 12px;
@@ -490,7 +433,7 @@
       text-indent: -28px;
       border-bottom: 1px solid rgba(255,255,255,0.03);
       line-height: 1.5;
-      word-break: break-word;        /* break long URLs gracefully */
+      word-break: break-word;        
       overflow-wrap: anywhere;
     }
     #dock-inspector .source-item:last-child { border-bottom: none; }
@@ -510,7 +453,7 @@
       font-size: 10.5px;
       margin-top: 4px;
       line-height: 1.4;
-      text-indent: 0;      /* cancel the hanging-indent from parent */
+      text-indent: 0;      
       padding-left: 0;
     }
     #dock-inspector .data-view {
@@ -532,18 +475,15 @@
       border-bottom: 1px solid #141d27; line-height: 1.35;
     }
     #dock-inspector table.xverify-table tr:hover td { background: #131b25; }
-    #dock-inspector .name-common { color: #5a6b7d; }           /* dim: matches current artifact's name */
-    #dock-inspector .name-diff   { color: #ffd454; font-weight: 600; }  /* gold: the difference */
-    #dock-inspector .pair-shared  { color: #5a6b7d; }          /* dim: concept:role appears in multiple rows */
-    #dock-inspector .pair-unique  { color: #74c0fc; font-weight: 600; }  /* blue: this pair is unique to this peer */
+    #dock-inspector .name-common { color: #5a6b7d; }           
+    #dock-inspector .name-diff   { color: #ffd454; font-weight: 600; }  
+    #dock-inspector .pair-shared  { color: #5a6b7d; }          
+    #dock-inspector .pair-unique  { color: #74c0fc; font-weight: 600; }  
     #dock-inspector .pair-chip {
       display: inline-block; padding: 1px 5px; margin: 1px 2px 1px 0;
       border-radius: 2px; background: #141d27; font-size: 10px;
     }
-    /* Peer-artifact chip used by the inverted Cross-verifies + Resolves
-       identity tables — each pivot row lists all the peer/definer artifacts
-       that share/resolve it. Compact + subtle so a long list doesn't
-       overwhelm the row. */
+    
     #dock-inspector .peer-chip {
       display: inline-block;
       padding: 1px 6px;
@@ -555,16 +495,10 @@
       font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
       border: 1px solid rgba(124, 196, 255, 0.18);
     }
-    /* Cross-verify expand: rows beyond the first 15 hidden until the user
-       clicks the "+ N more" link. On expand, the link text flips to
-       "Show N less" and rows reveal. Keeps the popup scannable by default
-       without permanently truncating peers on high-degree artifacts. */
+    
     #dock-inspector .xverify-wrap .xverify-row-extra { display: none; }
     #dock-inspector .xverify-wrap.expanded .xverify-row-extra { display: block; }
-    /* Stacked-block layout for the corroborated section — pivot title
-       on its own line, peer chips flow across nearly the full panel
-       width below. Replaces the table layout so long peer lists don't
-       cramp into a 58%-wide column. */
+    
     #dock-inspector .xverify-block {
       margin: 6px 0 10px 0;
       padding: 6px 8px;
@@ -605,8 +539,7 @@
       border-color: var(--accent);
       color: var(--ink);
     }
-    /* Dataset-count readout lives inline in the top bar (between toolbar and
-       the Controls/Config/Scenarios buttons). It's not a floating panel. */
+    
     #status {
       font-size: 11px; color: var(--ink-dim);
       padding: 4px 10px; border: 1px solid var(--stroke); border-radius: 4px;
@@ -614,8 +547,7 @@
       white-space: nowrap;
       margin-left: auto; margin-right: 8px;
     }
-    /* Legend — floating panel docked at bottom-left of canvas, hugging
-       the sidebar's right edge. Rows are click-to-toggle filters. */
+    
     #legend {
       bottom: 16px; left: calc(var(--sidebar-width) + 16px);
       width: 300px; max-height: 55vh; overflow-y: auto;
@@ -630,10 +562,7 @@
     #legend.collapsed { max-height: 32px; padding: 6px 12px; overflow: hidden; }
     #legend.collapsed .legend-body,
     #legend.collapsed #legend-overlay-controls { display: none; }
-    /* Export controls — small floating button + scale picker at bottom-left
-       of the canvas, sitting just to the right of the legend at the same
-       baseline. Picker chooses the PNG scale (2× / 4× / 8× / 16×); click
-       the camera button to export the current view at that scale. */
+    
     #export-controls {
       position: fixed;
       bottom: 16px;
@@ -715,9 +644,7 @@
     #legend h4 { margin: 0 0 6px 0; color: var(--ink); font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em; font-weight: 600; }
     #legend .legend-section { margin-top: 10px; }
     #legend .legend-section:first-of-type { margin-top: 0; }
-    /* Two-column grid for static informational rows (Edges,
-       Structural markers, Exit nodes). Halves vertical space; rows
-       still keep their swatch + label layout side-by-side inside. */
+    
     #legend .legend-section-two-col .legend-section-rows {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -726,9 +653,7 @@
     #legend .legend-section-two-col .legend-row {
       margin: 0 !important;
     }
-    /* Collapsible sections (e.g. Tags) — clean disclosure triangle on
-       the section header so analysts can hide rarely-used filter sets
-       until they need them. */
+    
     #legend .legend-section-collapsible { margin-top: 10px; }
     #legend .legend-section-collapsible > summary {
       cursor: pointer;
@@ -751,9 +676,7 @@
       margin: 0 !important;
     }
     #legend .legend-row { display: flex; align-items: center; gap: 10px; margin: 4px 0; line-height: 1.35; }
-    /* Filterable rows — click toggles visibility. Off-state dims to 35%
-       so the swatch + label are still readable (analyst can see what
-       they've hidden). Hover cue on the clickable rows only. */
+    
     #legend .legend-row.is-filterable {
       cursor: pointer; user-select: none;
       border-radius: 3px; padding: 2px 4px; margin: 2px -4px;
@@ -764,10 +687,9 @@
     #legend .legend-row-checkbox {
       margin: 0; flex-shrink: 0;
       accent-color: var(--accent);
-      pointer-events: none; /* row click handles the toggle — avoid double-fire */
+      pointer-events: none; 
     }
-    /* Swatch column fits the widest SVG shape produced by swatchSvg()
-       (mother/hull/line render at 22px wide). */
+    
     #legend .legend-swatch {
       flex-shrink: 0;
       width: 24px; height: 22px;
@@ -776,9 +698,7 @@
     }
     #legend .legend-swatch svg { display: block; overflow: visible; }
     #legend .legend-label { color: var(--ink); font-size: 11px; min-width: 0; overflow-wrap: anywhere; }
-    /* Table-style mechanism/link-affinity rows — two aligned cells so
-       the canonical id (left) and friendly name (right) can be
-       cross-read at a glance. */
+    
     #legend .legend-row.legend-row-table .legend-label {
       display: grid; grid-template-columns: 1fr 1.35fr;
       gap: 6px; align-items: baseline;
@@ -792,13 +712,11 @@
       color: var(--ink); font-size: 11px;
     }
     #legend .legend-sub { color: var(--ink-dim); font-size: 10.5px; display: block; margin-top: 1px; }
-    /* Full-width clickable header bar — sticks to the top of the legend
-       so the toggle stays reachable even after the analyst scrolls the
-       filter rows. Click anywhere on it to collapse/expand. */
+    
     #legend-header {
       display: flex; align-items: center; justify-content: space-between;
       padding: 4px 0;
-      margin: -10px -12px 6px -12px;   /* extend to legend edges */
+      margin: -10px -12px 6px -12px;   
       padding: 8px 12px;
       cursor: pointer; user-select: none;
       background: var(--panel-solid);
@@ -813,7 +731,7 @@
       color: var(--ink-dim); font-size: 11px;
       font-family: 'Menlo', monospace;
       transition: transform 0.2s, color 0.15s;
-      pointer-events: none;  /* clicks pass to the header */
+      pointer-events: none;  
     }
     #legend.collapsed #legend-toggle { transform: rotate(-90deg); }
     #legend-header:hover #legend-toggle { color: var(--ink); }
@@ -831,9 +749,7 @@
     #dock-inspector .field-value { color: var(--ink); word-break: break-all; font-size: 12px; }
     #dock-inspector .pill { display: inline-block; background: #17212d; border: 1px solid #253244; padding: 2px 7px; margin: 2px 2px 0 0; border-radius: 10px; font-size: 10.5px; color: var(--ink); }
     #dock-inspector .pill.ghost { background: #1b1b1b; border-color: #333; color: #b0b0b0; }
-    /* Editorial-style inspector sections — replaces the tracking-spaced
-       FIELD-LABEL chrome with a prose meta-line + h3 headings so the
-       panel reads like a forensic note rather than a form. */
+    
     #dock-inspector .inspector-meta-line {
       margin: 4px 0 6px 0; font-size: 11px;
       display: flex; flex-wrap: wrap; gap: 4px;
@@ -881,9 +797,7 @@
     #dock-inspector .inspector-tags-line {
       margin: 8px 0; font-size: 10.5px; color: var(--ink-dim);
     }
-    /* Observation cards — one per artifact.observations[] entry.
-       Displays proposition + Casey ceiling + caveat note. Promoted out
-       of Advanced in the 2026-04-23 refactor. */
+    
     #dock-inspector .obs-list { display: flex; flex-direction: column; gap: 5px; }
     #dock-inspector .obs-card {
       background: rgba(124, 196, 255, 0.06);
@@ -916,7 +830,7 @@
       margin-top: 3px; line-height: 1.45;
       white-space: pre-wrap;
     }
-    /* Anti-forensic Advanced detail rows */
+    
     #dock-inspector .af-cleaner-row {
       padding: 3px 0; font-size: 11px;
       border-top: 1px dashed rgba(255, 255, 255, 0.06);
@@ -930,7 +844,6 @@
     .close-btn { float: right; cursor: pointer; color: var(--ink-dim); background: none; border: none; font-size: 16px; }
     .close-btn:hover { color: var(--ink); }
 
-    /* ---- Graph SVG ---- */
     svg .edge {
       fill: none;
       stroke-opacity: 0.55;
@@ -945,8 +858,6 @@
     svg .edge.edge-hover { stroke-opacity: 1; stroke-width: 3.5; filter: drop-shadow(0 0 2px currentColor); }
     svg .edge-hit { fill: none; stroke: transparent; stroke-width: 12; pointer-events: stroke; cursor: pointer; }
 
-    /* ---- Orphans view: artifacts not in the main connected component ----
-       Grouped by substrate-class; click-card to open details. */
     .orphan-view-wrap {
       padding: 20px 30px; color: var(--ink);
       max-width: 1400px;
@@ -999,11 +910,6 @@
       margin-top: 2px;
     }
 
-    /* Reset-view button — styled as a prominent action pill rather than a
-       tab-or-toggle outline, so it reads as "do something now" instead of
-       "switch to this view". Filled accent background + rounded-pill shape
-       + a leading circular-arrow glyph make it unmistakable next to the
-       navigation chrome. Hidden outside substrate / substrate3d views. */
     #view-reset-btn {
       background: var(--accent);
       color: #0a1220;
@@ -1037,13 +943,6 @@
     body[data-view="substrate"]   #view-reset-btn,
     body[data-view="substrate3d"] #view-reset-btn { display: inline-flex; }
 
-    /* Substrate view — DRAW all edges (don't hide). Policy: "any color but
-       grey". Edges keep their mechanism/link palette color; the neon pair
-       overlay sits on top as an additive highlight, NOT a replacement.
-       (Earlier hide rule removed per user direction 2026-04-23.) */
-    /* Hull graph off on substrate view — mother territorial halos and
-       mechanism hulls both removed so the view is pure nodes + structural
-       skeleton + shared-pair overlay. No background color washes. */
     body[data-view="substrate"] svg .halo-layer,
     body[data-view="substrate"] svg circle.mother-halo,
     body[data-view="substrate"] svg .mechanism-hull-layer,
@@ -1053,21 +952,10 @@
       display: none !important;
     }
 
-    /* ---- Substrate view: neon tint ----
-       Single saturate/brightness/contrast filter on the root SVG — one
-       compositor pass, not per-path. Ramped up 2026-04-23 to push the
-       palette into loud/neon territory against the dark bg, so non-lit
-       content stays chromatically legible (not washed-out grey) while
-       the tier-lit nodes hit full-bright. Per-view override below kicks
-       in further for substrate. */
     #view-container svg {
       filter: saturate(2.2) brightness(1.35) contrast(1.2);
     }
 
-    /* Exit nodes — amber halo for highest-confidence forensic terminators.
-       Identifier concepts and flagged artifacts earn this treatment. The
-       glow is intentionally loud: exit-nodes are where a forensic chain
-       terminates, and the viewer should make them unmistakable at a glance. */
     @keyframes exitNodePulse {
       0% {
         filter: drop-shadow(0 0 12px rgba(255, 193,  7, 0.95))
@@ -1106,10 +994,6 @@
       letter-spacing: 0.02em;
     }
 
-    /* Timestamp indicator — small filled dot on nodes whose fields answer
-       "when" for their specific forensic data. Not an exit node (those
-       answer the full forensic question) but an endpoint for TIME alone. */
-    /* Forensic path highlighting */
     svg .node-shape.path-hit {
       stroke: #ff9b6b !important;
       stroke-width: 3 !important;
@@ -1118,11 +1002,7 @@
     }
     svg .node-shape.path-start { stroke: #3cff7e !important; stroke-width: 3.5 !important; opacity: 1 !important; filter: drop-shadow(0 0 8px #3cff7e) !important; }
     svg .node-shape.path-end   { stroke: #ff5a5a !important; stroke-width: 3.5 !important; opacity: 1 !important; filter: drop-shadow(0 0 8px #ff5a5a) !important; }
-    /* Temporary highlights (path-dim, scenario-dim while a path is being
-       inspected) desaturate the rest of the canvas to near-greyscale so
-       the lit path/route reads cleanly without competing against the
-       full mechanism palette. Saturate(0) = full B&W; we leave a hint
-       of color so it doesn't feel completely flat. */
+    
     svg .node-shape.path-dim {
       opacity: 0.18 !important;
       filter: saturate(0.05) brightness(0.55) !important;
@@ -1137,30 +1017,16 @@
       stroke-opacity: 0.04 !important;
       filter: saturate(0.05) brightness(0.5) !important;
     }
-    /* When a path-dim is in effect, also greyscale the labels of dimmed
-       nodes so the reading hierarchy matches the visual one. */
+    
     svg g.node:has(.node-shape.path-dim) text.node-label,
     svg g.node:has(.node-shape.path-dim) text.substrate-label {
       filter: saturate(0.05) !important;
       opacity: 0.25 !important;
     }
 
-    /* ----- CRAWL ANIMATION -----
-       While svg.crawling, everything goes dark. Path nodes/edges receive
-       .crawl-lit sequentially, lighting them up with a brief pulse. Each
-       step lights one node + the edge that led into it (except the first).
-       Endpoints get a stronger pulse. After the final step, a 1.8s "hold"
-       leaves the whole route lit, then crawling class is removed and the
-       regular path-hit/path-start/path-end styling resumes. */
     svg.crawling .node-shape { opacity: 0.04; transition: opacity 0.3s ease-out; }
     svg.crawling .node-shape-secondary { opacity: 0.04; }
 
-    /* Node half-coloring is meaningful ONLY under the link-affinity color
-       driver (the right-half overlay reads link-affinity-secondary for
-       concepts that declare it). When the driver switches to substrate-class,
-       community, or betweenness, the primary node is recolored but the
-       overlay keeps its link-palette color — producing an incoherent bi-
-       color. Hide the overlay whenever the driver isn't link. */
     body[data-color-driver="substrate-class"] svg .node-shape-secondary,
     body[data-color-driver="community"]    svg .node-shape-secondary,
     body[data-color-driver="betweenness"]  svg .node-shape-secondary {
@@ -1217,9 +1083,7 @@
     .path-btn.end   { border-color: #ff5a5a; color: #ff5a5a; }
     .path-btn.start.active { background: #1a3320; }
     .path-btn.end.active   { background: #331a1a; }
-    /* Action-suggestion pulse — reusable class for any button/element
-       that should briefly flag itself as "click me next". 6-second
-       duration; auto-removed by window.suggestAction helper. */
+    
     .pulse-green-6s {
       animation: suggest-green-pulse 1.2s ease-in-out 5;
       position: relative;
@@ -1236,12 +1100,7 @@
         border-color: #3cff7e;
       }
     }
-    /* Crawl-path ready-state glow — light green pulse when the button
-       is enabled (both A/B set) but the crawl hasn't been activated yet.
-       Disappears once crawling starts (.is-crawling class). */
-    /* Suppress the green ready-glow on crawl when path-btn-no-glow
-       class is set (per user request 2026-04-24). Subtle accent-cyan
-       outline instead so it still reads as "ready" without dominating. */
+
     #crawl-path.path-btn-no-glow.is-ready {
       border-color: var(--accent) !important;
       color: var(--accent) !important;
@@ -1273,8 +1132,7 @@
       background: #153421;
       box-shadow: 0 0 24px rgba(60, 255, 126, 0.8);
     }
-    /* Active-crawling state — suppress the ready glow, swap to a subdued
-       "running" treatment so Stop doesn't pulse demand-attention. */
+    
     #crawl-path.is-crawling {
       border-color: #ffd166;
       color: #ffd166;
@@ -1284,11 +1142,9 @@
     }
     #crawl-path.is-crawling:hover { background: #3a301a; }
 
-    /* Substrate labels — hover boost overrides tick-computed opacity */
     svg text.substrate-label.hover-neighbor { opacity: 1 !important; }
     svg text.substrate-label.hover-dim { opacity: 0.1 !important; }
 
-    /* Pinned node indicator (Substrate view — applied by JS after drag) */
     svg .node-shape.node-pinned {
       stroke: #ffffff !important;
       stroke-width: 1.8 !important;
@@ -1303,8 +1159,6 @@
       pointer-events: none;
     }
 
-    /* Articulation points — nodes whose removal fractures the graph.
-       Rendered with a violet outer ring (distinct from amber exit-node halo). */
     svg .node-articulation {
       fill: none;
       stroke: #c77dff;
@@ -1318,12 +1172,6 @@
       stroke-width: 2.8 !important;
     }
 
-    /* Mechanism hulls — purpose-based grouping by `link:` value. Labels ARE
-       the forensic insight (USB Management / Filesystem / User Activity /
-       etc.) — the hull serves the label, not vice versa. Hand-drawn-style:
-       bold colored outline, very light fill, hugs the cluster silhouette
-       (outliers rejected in renderMechanismHulls so single stray nodes don't
-       stretch the whole shape). */
     svg .mechanism-hull {
       fill-opacity: 0.04;
       stroke-opacity: 0.85;
@@ -1355,8 +1203,6 @@
     svg .node-shape.selected { stroke: #ffd700; stroke-width: 2.5; }
     svg .node-shape.dimmed { opacity: 0.25; }
 
-    /* Pinned label — persists regardless of hover/dim/scenario state.
-       Toggle via the "Pin label" button in the inspector hero. */
     svg text.node-label.label-pinned,
     svg text.substrate-label.label-pinned {
       opacity: 1 !important;
@@ -1377,7 +1223,7 @@
       stroke-width: 3.5;
       stroke-linejoin: round;
       stroke-linecap: round;
-      /* Soft outer shadow for extra legibility against colored node halos */
+      
       paint-order: stroke fill;
     }
     svg .node-label.artifact { fill: #ffffff; font-size: 11px; font-weight: 700; }
@@ -1385,7 +1231,6 @@
     svg .node-label.ghost     { fill: #c9d1dc; font-size: 9.5px; font-weight: 500; }
     svg .node-label.dimmed    { opacity: 0.2; }
 
-    /* ---- Scatter view ---- */
     svg .scatter-axis path, svg .scatter-axis line { stroke: var(--stroke); }
     svg .scatter-axis text { fill: var(--ink-dim); font-size: 10.5px; }
     svg .scatter-axis-label { fill: var(--ink); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em; }
@@ -1397,20 +1242,6 @@
     svg .scatter-dot.dimmed { opacity: 0.2; }
     svg .scatter-dot-label { fill: var(--ink-dim); font-size: 9.5px; pointer-events: none; }
 
-    /* ---- Scenario overlay (Substrate view only) ----
-       When a scenario is selected, non-participating nodes/edges dim to near-
-       invisibility while participating ones light up with colored stroke +
-       drop-shadow glow. Three tiers: primary artifacts (gold), corroborating
-       artifacts (amber), and join-key concepts (blue). Scenario-lit edges
-       match (concept, role) pairs declared by the scenario. */
-    /* Spotlight muting — during a scenario or walkthrough step, non-lit
-       content stays visible but DESATURATES so focus lands on the lit
-       tiers without the rest of the canvas greying out. Opacity stays
-       high (0.70) so shapes read; saturate(0.25) pulls color out so they
-       don't compete with tier-lit nodes. Contrast comes from the tier
-       classes' bright strokes + glow, not from dimming the background.
-       Substrate skeleton edges stay at near-full opacity — the frame
-       should remain a readable structural reference. */
     svg.scenario-active .node-shape:not(.scenario-lit):not(.step-hover):not(.step-ultra):not(.end-node-twinkle):not(.spine-lit):not(.path-hit):not(.path-start):not(.path-end) {
       opacity: 0.08;
       filter: saturate(0.15);
@@ -1463,28 +1294,17 @@
     svg.scenario-active .node-shape.exit-node { animation: none !important; filter: none !important; }
     svg.scenario-active .node-exit-halo { display: none !important; }
     svg.scenario-active .node-label.exit-node { font-weight: inherit; fill: var(--ink-dim); }
-    /* Focus mode mirrors scenario-active: exit-node amber glow/pulse/halo
-       all suppress so the focused artifact's neighborhood reads cleanly
-       without competing terminus emphasis elsewhere on the canvas. */
+    
     body.focus-active svg .node-shape.exit-node { animation: none !important; filter: none !important; }
     body.focus-active svg .node-exit-halo { display: none !important; }
     body.focus-active svg .node-label.exit-node { font-weight: inherit; fill: var(--ink-dim); }
-    /* Walkthrough-active — the hardest dim mode. Everything that isn't
-       explicitly in the step's lit tiers (step-ultra / step-hover /
-       scenario-lit) should recede fully so the join-chain narrative is
-       the only thing drawing the eye. */
+    
     body.walkthrough-active svg .node-shape.exit-node:not(.end-node-twinkle):not(.step-ultra) { animation: none !important; filter: none !important; }
     body.walkthrough-active svg .node-exit-halo { display: none !important; }
     body.walkthrough-active svg .node-label.exit-node:not(.end-node-twinkle):not(.step-ultra) { font-weight: inherit; fill: var(--ink-dim); }
-    /* T2 convergence-pair overlay ("hyper edges") also hides during
-       walkthrough — the per-step chain edges are the narrative; the
-       corpus-wide pair ribbons would just be noise competing with them. */
+    
     body.walkthrough-active .conv-links-overlay-layer { display: none !important; }
-    /* Neon pair overlay dims alongside any other "lights dim" state.
-       The overlay layer is a child of the SVG root, so the direct
-       scenario-active parent selector reaches it. Also covers focus mode
-       (body.focus-active, set when an artifact is focused) and the crawl
-       dim (svg.crawling, forensic-path overlay). */
+    
     svg.scenario-active .conv-links-overlay-layer {
       opacity: 0.18 !important;
     }
@@ -1494,24 +1314,15 @@
     svg.crawling .conv-links-overlay-layer {
       opacity: 0.12 !important;
     }
-    /* Mother halos + mechanism hulls quiet down so they don't wash out
-       the lit tiers' drop-shadows. */
+    
     body.walkthrough-active svg circle.mother-halo { opacity: 0 !important; }
     body.walkthrough-active svg .mechanism-hull,
     body.walkthrough-active svg .mechanism-hull-label { opacity: 0 !important; }
-    /* Full edge blackout during walkthrough — only the lit-tier classes
-       (scenario-lit-edge / edge-step-hover / edge-step-ultra / highlight)
-       are allowed to render. Structural skeleton, any remaining default
-       edges, and every other path.edge drop to stroke-opacity 0.
-       The :not() chain keeps the lit tiers visible; everything else goes
-       fully black. Higher specificity than the scenario-active rule so
-       this wins the cascade during walkthrough. */
+    
     body.walkthrough-active svg path.edge:not(.edge-step-ultra):not(.edge-step-hover):not(.scenario-lit-edge):not(.highlight) {
       stroke-opacity: 0 !important;
     }
-    /* Kill-switch — when the "Show all edges" legend toggle is on, restore
-       every hidden edge to a visible floor opacity. Overrides every
-       other hide rule via specificity (body-class + :not). */
+    
     body.show-all-edges svg path.edge {
       stroke-opacity: 0.6 !important;
       display: unset !important;
@@ -1534,12 +1345,6 @@
       display: none !important;
     }
 
-    /* =====================================================================
-     * SUPER PHOTO MODE — triples the neon blur across every glowing
-     * overlay (step-hover, step-ultra, scenario-lit-*, exit-node halo,
-     * T2 pair ribbons). Heavy GPU cost — use only for screenshots.
-     * Toggled via #legend-super-photo-toggle in the legend panel.
-     * ===================================================================== */
     body.super-photo-mode svg .node-shape.step-hover {
       filter: drop-shadow(0 0 54px rgba(120, 225, 255, 1))
               drop-shadow(0 0 18px rgba(120, 225, 255, 0.9)) !important;
@@ -1586,22 +1391,21 @@
     body.super-photo-mode svg .node-exit-halo {
       filter: drop-shadow(0 0 36px rgba(255, 212, 84, 0.9)) !important;
     }
-    /* T2 neon pair ribbons get a thick glow — the overlay uses inline
-       stroke attributes, so we pin the filter via attribute selector. */
+    
     body.super-photo-mode .conv-links-overlay-layer path {
       stroke-width: 4.8 !important;
       stroke-opacity: 0.95 !important;
       filter: drop-shadow(0 0 12px currentColor)
               drop-shadow(0 0 24px currentColor) !important;
     }
-    /* Label glow boost so pinned titles pop on the photograph too. */
+    
     body.super-photo-mode svg text.node-label.label-pinned,
     body.super-photo-mode svg text.substrate-label.label-pinned {
       text-shadow: 0 0 12px rgba(0, 0, 0, 0.95),
                    0 0 6px rgba(0, 0, 0, 0.85),
                    0 0 18px rgba(255, 255, 255, 0.35) !important;
     }
-    /* Restore the overlay-tier drop-shadow for exit-nodes that ARE lit. */
+    
     svg.scenario-active .node-shape.exit-node.scenario-lit-primary {
       filter: drop-shadow(0 0 10px rgba(255, 209, 102, 0.85)) !important;
     }
@@ -1624,10 +1428,6 @@
       stroke-width: 2.4 !important;
     }
 
-    /* Join-key-specific edge highlight. Hover a join-key pill → this
-       class is added only to the edges that carry that exact (concept,
-       role) pair within the active scenario. Override scenario-lit-edge
-       so the hover stands out against the already-lit aura. */
     svg path.edge.jk-edge-hover {
       stroke: #78e1ff !important;
       stroke-opacity: 1 !important;
@@ -1635,9 +1435,6 @@
       filter: drop-shadow(0 0 6px rgba(120, 225, 255, 0.9)) !important;
     }
 
-    /* Scenario summary chips — hoverable artifact names and join-key pills
-       so the departing-employee (non-stepwise) scenario gets the same
-       mouse-to-highlight behavior as the stepwise convergence chain. */
     .scenario-chip-row {
       display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px;
     }
@@ -1690,26 +1487,14 @@
     }
     .scenario-jk-pill:hover em { color: var(--ink); }
 
-    /* Step-hover — user is hovering an artifact chip in the scenarios
-       panel's stepwise view. Overrides scenario dim, scenario-lit tiers,
-       and crawl-dim so the hover target pops no matter what overlay is
-       currently driving the graph. Cyan to distinguish from scenario
-       amber/blue/gold and forensic-path orange. */
     svg .node-shape.step-hover {
       stroke: #78e1ff !important;
       stroke-width: 3.5 !important;
       filter: drop-shadow(0 0 18px rgba(120, 225, 255, 1)) !important;
       opacity: 1 !important;
-      /* No fill override — node keeps its mechanism color; cyan stroke +
-         halo carry the "calm tier" signal without flattening the palette. */
+      
     }
 
-    /* Spine-reveal — pre-walkthrough animation that lights up the
-       least-hop path from start node to end node, one hop at a time.
-       Each node and connecting edge stays lit after it's revealed,
-       so by the time the walkthrough begins the entire spine is
-       visible as a gold trail underneath the per-step ultra/calm
-       state. Class is added by setSpineLit / setSpineLitEdge. */
     svg .node-shape.spine-lit:not(.step-ultra):not(.end-node-twinkle) {
       stroke: #ffd166 !important;
       stroke-width: 3 !important;
@@ -1729,8 +1514,7 @@
       stroke-width: 2.6 !important;
       filter: drop-shadow(0 0 6px rgba(255, 209, 102, 0.6)) !important;
     }
-    /* Reveal animation — newly-lit spine nodes/edges fade in with a
-       brief pulse so the eye catches the "next hop" as it lights up. */
+    
     svg .node-shape.spine-lit.spine-just-lit {
       animation: spine-just-lit 0.6s ease-out;
     }
@@ -1746,11 +1530,6 @@
       100% { stroke-opacity: 0.85; stroke-width: 2.6; filter: drop-shadow(0 0 6px rgba(255, 209, 102, 0.6)); }
     }
 
-    /* End-node twinkle — gold pulsing halo on the walkthrough's
-       destination artifact (last step's first artifact). Persists for
-       the whole walkthrough as a "you're heading here" goalpost.
-       Suppressed when the end node is also the current step's ultra
-       so the rainbow Option-F treatment wins on its turn. */
     svg g.node.end-node-twinkle:not(.step-ultra) .node-shape,
     svg .node-shape.end-node-twinkle:not(.step-ultra) {
       animation: end-node-twinkle 2.4s ease-in-out infinite !important;
@@ -1767,8 +1546,7 @@
                 brightness(1.18);
       }
     }
-    /* Label twinkles too — softer gold pulse so the destination's name
-       reads as "the goal" without competing with the active step. */
+    
     svg g.node.end-node-twinkle:not(.step-ultra) text.node-label,
     svg g.node.end-node-twinkle:not(.step-ultra) text.substrate-label,
     svg text.node-label.end-node-twinkle:not(.step-ultra),
@@ -1790,14 +1568,6 @@
       font-weight: 700 !important;
     }
 
-    /* Step-ultra — strobing amber↔white highlight for the step's "hero"
-       nodes (join-key concept + named step artifacts). Fast strobe (0.6s)
-       + color inversion makes the current step unmistakable against the
-       accumulating calm-cyan history of prior steps. */
-    /* Option-F treatment (chosen 2026-04-23): sustained 1.7× enlargement,
-       no size pulse, rainbow color cycle (1.4s) carries the "active step"
-       signal; label is forced visible at 17px with a black halo so the
-       hero artifact is readable at any zoom over any background. */
     svg .node-shape.step-ultra {
       stroke-width: 4.5 !important;
       stroke: #ffffff !important;
@@ -1853,9 +1623,7 @@
       stroke-width: 3.5 !important;
       animation: edge-step-ultra-pulse 0.6s ease-in-out infinite !important;
     }
-    /* Edge-specific keyframe — stroke color + drop-shadow mirror the
-       node step-ultra pulse so a lit step edge and its endpoints share
-       one synchronized amber ↔ white blink. */
+    
     @keyframes edge-step-ultra-pulse {
       0%, 100% {
         stroke: #ffd166;
@@ -1868,15 +1636,9 @@
       }
     }
 
-
-    /* Stepwise scenarios panel — card list rendered when a scenario
-       carries `steps:`. Each card shows one investigative question, the
-       artifacts that answer it, the join key, and the conclusion +
-       Casey score. Artifact chips hover-light-up the corresponding
-       graph node via .step-hover. */
     #scenario-steps { margin-top: 10px; display: none; }
     #scenario-steps.visible { display: block; }
-    /* (#scenario-steps-title removed — Play button hoisted up in its place.) */
+    
     .step-card {
       margin: 6px 0;
       padding: 8px 10px;
@@ -1942,10 +1704,7 @@
       font-style: italic;
       margin-top: 4px;
     }
-    /* attribution-sentence — the verbatim citation defense line added
-       in the 2026-04-23 walkthrough audit. Rendered as a small block
-       at the very bottom of the step card, below the brief attribution
-       line, with the primary-source id appended as a purple monospace tail. */
+    
     .step-card-sentence {
       font-size: 10.5px;
       color: var(--ink);
@@ -1969,12 +1728,6 @@
       font-size: 9.5px;
     }
 
-    /* Progressive reveal — three discrete visual states per card so the
-       analyst always knows where they are:
-         LOCKED    — grey left bar, hidden answer, "click to reveal" CTA
-         REVEALED  — blue left bar, visible answer, "REVEALED" badge
-         ACTIVE    — gold left bar (thick) + gold halo, visible answer,
-                     "ACTIVE" badge, pulsing join-key animation */
     .step-card {
       cursor: pointer;
       transition: border-color 0.25s, background 0.25s, box-shadow 0.25s, transform 0.15s;
@@ -1982,7 +1735,6 @@
     }
     .step-card:active { transform: scale(0.98); }
 
-    /* LOCKED state — card without .revealed */
     .step-card:not(.revealed) {
       border-left-color: rgba(150, 150, 150, 0.5) !important;
       background: rgba(255, 255, 255, 0.02);
@@ -1994,10 +1746,9 @@
     .step-card:not(.revealed) .step-card-sentence {
       display: none;
     }
-    /* CTA badge drawn via ::after; positioned on right side below the
-       Casey label. Switches text + color per state. */
+    
     .step-card {
-      padding-right: 110px !important;  /* reserve room for the badge */
+      padding-right: 110px !important;  
     }
     .step-card::after {
       position: absolute;
@@ -2035,7 +1786,6 @@
       50%      { box-shadow: 0 0 12px 4px rgba(255, 209, 102, 0.4); }
     }
 
-    /* Animated expansion when answer reveals */
     .step-card .step-card-artifacts,
     .step-card .step-card-joinkey,
     .step-card .step-card-conclusion,
@@ -2047,14 +1797,12 @@
       100% { opacity: 1; transform: translateY(0); }
     }
 
-    /* REVEALED state */
     .step-card.revealed {
       background: rgba(124, 196, 255, 0.09);
       border-left-color: rgba(124, 196, 255, 0.75);
       border-left-width: 3px;
     }
 
-    /* ACTIVE state — gold halo + thick left bar */
     .step-card.is-active {
       background: rgba(255, 209, 102, 0.08);
       border-left-color: #ffd166;
@@ -2063,11 +1811,6 @@
                   inset 3px 0 0 rgba(255, 209, 102, 0.5);
     }
 
-    /* During an active walkthrough, hide all the picker chrome and the
-       non-active step cards in the Scenarios pane so the CURRENT step
-       gets the entire pane to itself. The active card stretches to fill
-       the available height; its prose, chips, attribution, and source
-       all become readable at full size instead of cramped in a list. */
     body.walkthrough-active #tool-pane-scenarios #scenario-picker-tabs,
     body.walkthrough-active #tool-pane-scenarios #scenario-picker-label,
     body.walkthrough-active #tool-pane-scenarios #scenario-list,
@@ -2120,7 +1863,6 @@
       margin-top: 8px;
     }
 
-    /* Progress-bar at top of the steps pane — shows X of Y revealed */
     #scenario-steps-progress {
       display: flex; align-items: center; gap: 8px;
       margin: 4px 0 10px 0;
@@ -2138,13 +1880,6 @@
       transition: width 0.3s ease-out;
     }
 
-    /* Unique join-key animation. Three layers combine:
-       1. Pulsing text glow (color cycle amber → cyan → amber)
-       2. Underline that sweeps left-to-right then resets
-       3. Gentle scale-up on each pulse peak
-       Only applies to `.step-card.is-active .jk-concept`. When a different
-       step is activated, `.is-active` is removed from the prior step —
-       animation disperses: glow drains, underline collapses, scale returns. */
     @keyframes jk-pulse {
       0%, 100% {
         color: #ffd166;
@@ -2175,8 +1910,7 @@
       animation: jk-pulse 1.6s ease-in-out infinite, jk-underline-sweep 0.8s ease-out 1;
       will-change: color, transform, text-shadow;
     }
-    /* Dispersion effect: when a step was previously active but is no
-       longer, hold a gentle residual glow for 0.6s then fade. */
+    
     @keyframes jk-disperse {
       0% {
         text-shadow: 0 0 6px rgba(255, 209, 102, 0.5);
@@ -2191,11 +1925,6 @@
       animation: jk-disperse 0.6s ease-out 1;
     }
 
-    /* Overlay-type selector — three-way segmented control so the user
-       picks a category (Scenarios / Convergence Chains / Single Artifact)
-       before picking an entry inside it. Visual separation matters here:
-       plain scenarios, stepwise chains, and single-artifact highlights
-       are three different analytical tools with different expectations. */
     #overlay-tabs {
       display: flex; gap: 0; margin-bottom: 10px;
       border: 1px solid var(--stroke); border-radius: 5px;
@@ -2229,7 +1958,7 @@
       opacity: 0.5;
     }
     .overlay-tab:disabled:hover { color: var(--ink-faint); }
-    /* Single-artifact search input shown only in the highlight tab. */
+    
     #artifact-search {
       display: none;
       width: 100%;
@@ -2243,9 +1972,7 @@
       box-sizing: border-box;
     }
     #artifact-search:focus { outline: none; border-color: var(--accent); }
-    /* Scenario picker — card list rather than a native dropdown so each
-       scenario is plainly visible and clickable without a two-step
-       open-and-select interaction. */
+    
     #scenario-picker-label {
       font-size: 10.5px; color: var(--ink-dim);
       text-transform: uppercase; letter-spacing: 0.06em;
@@ -2255,16 +1982,13 @@
       display: flex; flex-direction: column;
       min-height: 100%;
     }
-    /* Spacer pushes the scenario-summary + play + steps block to the
-       bottom of the pane when the list + picker sit at the top. */
+    
     #scenario-summary:not(:empty) {
       margin-top: auto;
     }
     #scenario-list {
       display: flex; flex-direction: column; gap: 4px;
-      /* Cap at ~5-6 items high with overflow scroll — bumped 2026-04-23
-         from 108px (2 items) per user feedback that the list was too
-         short to scan. Still scrolls when there are more scenarios. */
+      
       max-height: 260px;
       overflow-y: auto;
       padding-right: 4px;
@@ -2314,10 +2038,7 @@
       margin-top: 10px; line-height: 1.5;
       padding: 10px 12px; background: rgba(124,196,255,0.05);
       border-left: 2px solid transparent; border-radius: 0 4px 4px 0;
-      /* Give the summary a real living area instead of letting it
-         collapse to short content height. Scrolls internally when the
-         narrative + chips overflow the cap. Bumped 2026-04-23 per user
-         feedback that the panel was too cramped for case-study reading. */
+      
       min-height: 220px;
       max-height: 50vh;
       overflow-y: auto;
@@ -2347,9 +2068,7 @@
       border-left: 2px solid var(--accent);
       border-radius: 0 3px 3px 0;
     }
-    /* Node search — replaces the substrate-overlay hint box at the top
-       of the Config pane. Typeahead lookup against node names + aliases;
-       click a suggestion to spotlight the node + open details. */
+    
     #node-search-wrap {
       position: relative;
       margin: 0 0 10px 0;
@@ -2425,7 +2144,7 @@
       color: var(--ink-faint);
       font-style: italic;
     }
-    /* Focus-mode indicator in scenarios panel footer */
+    
     #focus-indicator {
       margin-top: 10px; padding: 8px 10px;
       background: rgba(255,209,102,0.06);
@@ -2436,18 +2155,12 @@
     }
     #focus-indicator.visible { display: block; }
     #focus-indicator strong { color: #ffd166; }
-    /* Tool launcher — prominent buttons in the top-left dock that open the
-       Pair Inspector and Scenarios panes. Each swaps the dock tool pane
-       to a different mode. High-contrast by design: these are the two
-       primary forensic-tool entry points and should be immediately
-       discoverable above the view summary. */
+    
     #dock-tool-launch {
       display: flex; flex-direction: row; gap: 6px;
       padding: 8px 4px;
     }
-    /* Header row — brand on the left, Reset on the right, parallel.
-       Reset uses subdued accent styling so the brand keeps visual
-       primacy while Reset stays a clear-but-secondary action. */
+    
     .dock-header-row {
       display: flex;
       align-items: center;
@@ -2483,8 +2196,7 @@
       color: #ffffff;
     }
     .dock-reset-action:active { transform: translateY(1px); }
-    /* Schema link styled as a sibling of the Reset buttons but as an
-       anchor — strip the default underline + native link colors. */
+    
     a.dock-schema-link {
       text-decoration: none;
       display: inline-block;
@@ -2554,11 +2266,6 @@
       font-weight: 700;
     }
 
-    /* Tool-pane layout (2026-04-23 user-directed split):
-       Config + Scenarios are ALWAYS visible, splitting #dock-toolpane
-       50/50 vertically. Pair (top-bar Pair / Path button) overlays
-       the entire area when active and hides Config + Scenarios.
-       Re-toggling Pair off restores the 50/50 split. */
     #dock-toolpane {
       display: flex;
       flex-direction: column;
@@ -2591,15 +2298,12 @@
       padding-bottom: 12px;
       margin-bottom: 12px;
     }
-    /* When Pair is active, it covers the whole pane area; Config + Scenarios hide */
+    
     #dock-toolpane:has(#tool-pane-pair.active) #tool-pane-config,
     #dock-toolpane:has(#tool-pane-pair.active) #tool-pane-scenarios {
       display: none !important;
     }
-    /* Default state: Config starts collapsed (per user request). Same
-       hover-to-peek pattern as the walkthrough collapse below — keeps the
-       Scenarios pane visible at full height by default and reduces Config
-       to a thin label strip until the user hovers/focuses it. */
+    
     #dock-toolpane #tool-pane-scenarios {
       flex: 1 1 auto !important;
     }
@@ -2642,11 +2346,6 @@
       display: none;
     }
 
-    /* During an active walkthrough, give the Scenarios pane (which holds
-       the step cards + progress bar) the full vertical space, and collapse
-       Config to a thin label strip at the bottom. Hover the strip to peek;
-       click reveals briefly via :focus-within. Keeps filters reachable
-       without stealing half the dock from the active step content. */
     body.walkthrough-active #dock-toolpane #tool-pane-scenarios {
       flex: 1 1 auto !important;
     }
@@ -2691,11 +2390,6 @@
     #tool-pane-pair { display: none; }
     #tool-pane-pair.active { display: block; }
 
-    /* Pair sections — stacked A/B relationship + Start→End path. The Path
-       section is gated: hidden until both A and B resolve to valid nodes.
-       Max-width keeps the pair UI compact even when the right dock is
-       wide (33vw) — oversized buttons and whitespace otherwise feel
-       bloated against the dense graph. */
     #tool-pane-pair { max-width: 420px; }
     .pair-pane-intro {
       font-size: 10.5px;
@@ -2717,7 +2411,6 @@
     .pair-section[data-pair-section="path"] { display: none; }
     .pair-section[data-pair-section="path"].is-available { display: block; }
 
-    /* Pair-stats internal styling. */
     #pair-stats .pair-stats-empty { color: var(--ink-faint); font-style: italic; padding: 20px 4px; text-align: center; }
     #pair-stats .pair-stats-summary {
       display: flex; gap: 12px; margin-bottom: 10px;
@@ -2737,11 +2430,7 @@
       transition: background 0.1s;
     }
     #pair-stats .pair-row:hover { background: rgba(120, 225, 255, 0.12); }
-    /* Unavailable rows — referenced artifact id not in the current
-       dataset. Distinctly different visual: red-tinted bg + dashed
-       red left bar + strikethrough name + a "(not in dataset)" tag
-       on the meta line, so the analyst can't miss that these are
-       stub references they can skip past. */
+    
     #pair-stats .pair-row.pair-row-unavailable {
       opacity: 0.7;
       cursor: not-allowed;
@@ -2768,17 +2457,13 @@
       text-decoration: none;
       display: inline-block;
     }
-    /* Pinned rows — clicked to lock the spotlight on this artifact.
-       Cyan left bar + tinted bg mirrors the canvas highlight that
-       setStepHover applies, so the eye links the row to its lit node. */
+    
     #pair-stats .pair-row.pair-row-pinned {
       background: rgba(120, 225, 255, 0.14) !important;
       border-left: 3px solid var(--accent);
       padding-left: 5px;
     }
-    /* Documented routes list — populated below the pair stat display
-       after pathfinding. One block per candidate, click a header to
-       spotlight just that route on the canvas. */
+    
     #path-routes-list .path-routes-header {
       font-size: 10px;
       color: var(--ink-dim);
@@ -2816,10 +2501,7 @@
     #path-routes-list.is-unhighlighted .path-route-block.is-active {
       opacity: 1;
     }
-    /* Canvas-hover sync — when a node is hovered on the graph, any route
-       block containing it pops with a brighter cyan ring. The matching
-       chip inside that block also gains an inner glow so the analyst can
-       see exactly where in the route the hovered node sits. */
+    
     #path-routes-list .path-route-block.route-contains-hover {
       background: rgba(120, 225, 255, 0.10);
       border-left-color: var(--accent);
@@ -2829,9 +2511,7 @@
       box-shadow: 0 0 0 2px var(--accent), 0 0 8px rgba(120, 225, 255, 0.55);
       filter: brightness(1.2);
     }
-    /* Disabled-by-filter routes — block dims out + diagonal-stripe bg
-       so the analyst sees their legend filter is excluding this route
-       from real consideration. Hover tooltip lists the hidden nodes. */
+    
     #path-routes-list .path-route-block.route-has-hidden {
       opacity: 0.45;
       background:
@@ -2919,11 +2599,6 @@
     #path-routes-list .path-route-role::before { content: "—"; margin-right: 2px; }
     #path-routes-list .path-route-role::after  { content: "→"; margin-left: 2px; }
 
-    /* Excluded rows — dblclicked to drop from the pair pathfinder.
-       Distinct from "unavailable" (which is a data-state, dataset-stub)
-       — this is a USER choice. Strikethrough name + amber dashed bar so
-       the analyst knows they removed this node themselves and can
-       dblclick again to restore. */
     #pair-stats .pair-row.pair-row-excluded {
       opacity: 0.55;
       background: rgba(255, 209, 102, 0.06) !important;
@@ -2969,38 +2644,18 @@
     }
     #pair-stats .pair-bar-seg { height: 100%; }
 
-    /* ============================================================
-     * AESTHETIC OVERRIDES — research-grounded focus+context
-     * Lifted from sandbox feature #7 per H-023 consolidation; toggle
-     * removed (now permanent default). Sources/principles cited inline.
-     * Tufte (data-ink ratio); Munzner (focus+context); Few (pre-attentive
-     * luminance); Cleveland & McGill (luminance for FOCUS); Heer & Robertson
-     * (animated transitions); Gestalt (figure/ground); Holten & van Wijk
-     * (salience-based opacity as cheap edge bundling).
-     * ============================================================ */
-
-    /* 1. EDGE SALIENCE — CONDITIONAL focus+context (Munzner).
-     *    Edges keep default opacity when nothing is in focus. When a focus
-     *    state is active (hover, selection, scenario, crawl), non-relevant
-     *    edges dim to context layer; relevant edges pop. Uses :has()
-     *    (Chrome 105+, Safari 15.4+, Firefox 121+). */
     svg path.edge {
       transition: stroke-opacity 0.25s ease, stroke-width 0.25s ease;
       stroke-linecap: round;
       stroke-linejoin: round;
     }
-    /* Substrate-view edge types (mother/hub/satellite) are the structural
-       frame — they must NOT dim on selection; otherwise clicking a node
-       fades ~95% of the canvas to grey-ish thin lines. The selection-dim
-       is a main-graph pop mechanism only. */
+    
     body:has(svg g.node.hover) svg path.edge:not(.highlight):not(.scenario-lit-edge):not(.crawl-lit):not(.edge-bridge):not(.edge-substrate-mother):not(.edge-substrate-hub):not(.edge-satellite-spoke),
     body:has(svg g.node.selected) svg path.edge:not(.highlight):not(.scenario-lit-edge):not(.crawl-lit):not(.edge-bridge):not(.edge-substrate-mother):not(.edge-substrate-hub):not(.edge-satellite-spoke),
     svg.crawling path.edge:not(.crawl-lit):not(.highlight) {
       stroke-opacity: 0.10 !important;
     }
-    /* Walkthrough / scenario-active: non-lit edges hide completely. No
-       faint-grey filaments surviving in the background — the lit chain
-       is the whole story. */
+    
     svg.scenario-active path.edge:not(.scenario-lit-edge):not(.edge-step-hover):not(.edge-step-ultra):not(.highlight):not(.edge-substrate-mother):not(.edge-substrate-hub):not(.edge-satellite-spoke) {
       stroke-opacity: 0 !important;
     }
@@ -3016,8 +2671,6 @@
       stroke-opacity: 0.03 !important;
     }
 
-    /* 2. SELECTED/HOVERED GLOW (Few pre-attentive luminance).
-     *    Drop-shadow as outer halo; pre-attentively perceived in <200ms. */
     svg g.node.hover .node-shape,
     svg g.node.selected .node-shape,
     svg g.node .node-shape.selected {
@@ -3027,9 +2680,6 @@
       transition: filter 0.2s ease;
     }
 
-    /* 3. SMOOTH STATE TRANSITIONS (Heer & Robertson 2007).
-     *    Fade rather than cut for filter/scenario/view changes. Reduces
-     *    "where did that node go?" cognitive cost. */
     svg g.node .node-shape {
       transition: opacity 0.3s ease, fill-opacity 0.3s ease, filter 0.2s ease;
       filter: brightness(1.06) saturate(1.04);
@@ -3039,9 +2689,6 @@
       transition: opacity 0.3s ease, font-size 0.25s ease;
     }
 
-    /* 4. LABEL READABILITY (Few/Tufte typographic clarity).
-     *    Subtle dark stroke around labels so they remain readable when
-     *    overlapping bright nodes. */
     svg text.node-label {
       paint-order: stroke;
       stroke: rgba(0, 0, 0, 0.85);
@@ -3049,9 +2696,6 @@
       stroke-linejoin: round;
     }
 
-    /* 5. PAIR SELECTION GLOW (color-coded slot identification).
-     *    When pair-A / pair-B selections set data-pair attribute on nodes,
-     *    they get distinct color glows. Pair tagger to be wired separately. */
     svg g.node[data-pair="A"] .node-shape {
       filter: drop-shadow(0 0 12px var(--accent))
               drop-shadow(0 0 4px rgba(124, 196, 255, 0.7))
@@ -3063,7 +2707,6 @@
               brightness(1.18);
     }
 
-    /* 6. TIER 3 — Scenario participation (graduated emphasis by role). */
     svg .node-shape.scenario-lit-focus {
       filter: drop-shadow(0 0 18px #ffffff)
               drop-shadow(0 0 6px rgba(255, 255, 255, 0.85))
@@ -3093,8 +2736,6 @@
       filter: drop-shadow(0 0 4px rgba(124, 196, 255, 0.4));
     }
 
-    /* 7. STEP-HOVER — current walkthrough step gets brightest amber glow
-     *    matching forensic-attention amber palette. Pulses subtly. */
     svg .node-shape.step-hover {
       filter: drop-shadow(0 0 16px #ffd166)
               drop-shadow(0 0 6px rgba(255, 209, 102, 0.8))
@@ -3114,14 +2755,6 @@
       }
     }
 
-    /* 7c. ULTRASUPERHIGHLIGHT — most dramatic possible highlight.
-     *     Option-F treatment (chosen 2026-04-23): sustained 1.7× enlargement,
-     *     no size oscillation, rainbow color cycle, label forced visible at
-     *     17px with a black halo so the highlighted node is unmistakable
-     *     and readable at any zoom over any background.
-     *     Edge: 5s rainbow cycle (less frantic; preserved as-is).
-     *     Triggered via window.__ultrasuperhighlight(nodeId, on) JS hook;
-     *     also wireable to any DOM-class trigger. */
     svg g.node.ultrasuperhighlight .node-shape {
       animation: ultrasuperhighlight-node 1.4s linear infinite;
       transform-origin: center;
@@ -3199,11 +2832,6 @@
       }
     }
 
-    /* 7b. SIMPLIFIED PALETTE — togglable mode that flattens all node + link
-     *     colors to a 3-tone neutral palette. For decluttering when too many
-     *     colors compete (per user 2026-04-23). Activated via Display modes
-     *     checkbox (#display-simplified-palette) which sets body[data-simplified-palette].
-     *     Override is global across all SVG views. */
     body[data-simplified-palette="on"] svg .node-shape,
     body[data-simplified-palette="on"] svg .node-shape-secondary {
       fill: #6a7280 !important;
@@ -3222,7 +2850,7 @@
     body[data-simplified-palette="on"] svg text.substrate-label {
       fill: #b0b8c0 !important;
     }
-    /* Focus states still pop above the muted base */
+    
     body[data-simplified-palette="on"] svg g.node.hover .node-shape,
     body[data-simplified-palette="on"] svg g.node.selected .node-shape,
     body[data-simplified-palette="on"] svg .node-shape.scenario-lit,
@@ -3239,13 +2867,6 @@
       stroke-opacity: 0.92 !important;
     }
 
-    /* 8. HIGH-DEGREE-HUB MUTING — quiet visual treatment for heavily-
-     *    connected identifier concepts (UserSID, ExecutablePath, etc).
-     *    These concepts appear as star-pattern hubs with 20+ rays and
-     *    visually dominate views built around forensic artifact-to-artifact
-     *    relationships. Per user 2026-04-23: muted color is the simplification.
-     *    Hub node desaturates to neutral grey when not in focus.
-     *    Click-to-focus restores normal styling. */
     svg g.node.high-degree-hub .node-shape {
       fill: #4a4f55 !important;
       stroke: rgba(255,255,255,0.35) !important;
@@ -3255,16 +2876,9 @@
       fill: #888 !important;
       opacity: 0.7;
     }
-    /* Walkthrough tiers must beat the hub-muting rule — join-key concepts
-       ARE often high-degree hubs, so without this override the walkthrough
-       can't light them at all. Higher-specificity compound selectors
-       (`.high-degree-hub.step-hover`) beat the descendant-hub rule above. */
+    
     svg g.node.high-degree-hub .node-shape.step-hover {
-      /* Hub-muting still hides mechanism fill on high-degree hubs; when
-         the hub is the step-hover target, restore a mid-brightness fill
-         so the node reads clearly (hub rule would otherwise leave it at
-         dark grey from `.high-degree-hub .node-shape`). Using `currentColor`
-         effectively picks up the stroke color — cyan — for the fill. */
+      
       fill: currentColor !important;
       stroke: #78e1ff !important;
       opacity: 1 !important;
@@ -3288,42 +2902,26 @@
       fill: var(--ink) !important;
       opacity: 1;
     }
-    /* Edges originating from a high-degree hub fade by default; restore
-     * when hub is focused (Munzner focus+context applied to a specific
-     * structural pattern). */
-    /* Edges touching a high-degree hub — quiet down but KEEP their
-     * mechanism color (no grey override). Focus+context lives in the
-     * opacity reduction alone; hubs still visually recede without
-     * washing every ray to flat grey. */
+
     svg path.edge.high-degree-hub-edge {
       stroke-opacity: 0.7 !important;
-      /* No saturate filter — "any color but grey" policy means hub rays
-         stay at full mechanism color; opacity alone does the focus+context. */
+      
     }
-    /* When the hub is in focus, restore full edge brightness so the
-     * user can trace what the hub connects to. */
+    
     body:has(svg g.node.high-degree-hub.hover) svg path.edge.high-degree-hub-edge,
     body:has(svg g.node.high-degree-hub.selected) svg path.edge.high-degree-hub-edge {
       stroke-opacity: 0.85 !important;
       filter: none;
     }
 
-    /* 9. LABEL-SYSTEM AESTHETIC (sandbox-merged label tweaks).
-     *    Smooth transitions for top-N closest-to-middle label sizing
-     *    + companion-dim treatment when wheel-overrides are active.
-     *    Formulas applied in substrate view tick-handler; CSS handles
-     *    the visual transition smoothness. */
     svg text.node-label, svg text.substrate-label {
       paint-order: stroke;
-      /* Canvas rotation knob spins the inner content group; counter-
-         rotate text labels by the pre-negated --canvas-counter-rotation
-         (set by the knob's applyRotation) so they stay upright at any
-         angle. Plain var lookup (not calc()) keeps fast dial moves stable. */
+      
       rotate: var(--canvas-counter-rotation, 0deg);
       transform-box: fill-box;
       transform-origin: center;
     }
-    /* Top-3 nearest-origin labels get a subtle dark glow to anchor focus */
+    
     svg text.node-label.label-top-tier {
       text-shadow: 0 0 8px rgba(0, 0, 0, 0.95), 0 0 4px rgba(0, 0, 0, 0.85);
     }
@@ -3345,17 +2943,9 @@
     <button id="view-reset-btn" title="Recenter the view">Reset view</button>
   </div>
 
-  <!-- Permanent left sidebar — chrome for every view.
-       - dock-view-summary  : per-view stats strip
-       - dock-inspector     : selected-node / selected-edge details (always on)
-       - dock-toolpane      : active tool content (Config / Pair / Scenarios)
-       - legend             : color / shape key, collapsible
-       Inspector + tool pane split the flex space 2:1; view-summary and
-       legend are fixed-size (with legend capped + internal scroll). -->
+  
   <div id="left-dock">
-    <!-- ArtifactExplorer brand + Reset on the same row. Header label sits left,
-         Reset button sits right (parallel with the brand) so the dock
-         opens with both anchors visible without consuming a separate row. -->
+    
     <div class="dock-header dock-header-row">
       <span class="dock-header-brand">ArtifactExplorer</span>
       <div class="dock-header-actions">
@@ -3374,14 +2964,12 @@
     </div>
     <div class="dock-section dock-toolpane-section" id="dock-toolpane">
 
-      <!-- Pair page — unified two-node analysis. Single scrolling view with
-           an A/B relationship block and a Start→End path block. Activated
-           by top-bar Pair button. Ordered ABOVE config per user request. -->
+      
       <div class="tool-pane-page" id="tool-pane-pair">
 
         <div class="pair-pane-intro">double click to analyze</div>
 
-        <!-- A/B relationship block -->
+        
         <section class="pair-section" data-pair-section="stats">
           <h4 class="pair-section-title">Relationship (A ↔ B)</h4>
           <div class="tool-hint">
@@ -3397,20 +2985,14 @@
             <button id="pair-set-b" class="path-btn" style="flex: 1; background: #3a2f14; border-color: #ffd166; color: #ffd166;" disabled title="Use currently-selected node as B">Set as B</button>
             <button id="pair-clear" class="path-btn" style="padding: 4px 10px;" title="Clear both nodes">×</button>
           </div>
-          <!-- Calculate / Crawl / Clear / Show all share one row,
-               equal-width and wrap on narrow screens. Crawl is the
-               visual-only animation that plays along an already-
-               calculated path. Styled with no-glow class so it doesn't
-               pulse green like Calculate does. -->
+          
           <div style="margin-top: 6px; display: flex; flex-wrap: wrap; gap: 4px;">
             <button id="calculate-path" class="path-btn" style="flex: 1 1 22%; min-width: 80px;" disabled title="Compute the forensic path(s) between A and B. Routes appear in the Documented routes list below.">Calculate</button>
             <button id="crawl-path" class="path-btn path-btn-no-glow" style="flex: 1 1 22%; min-width: 80px;" disabled title="Play the visual crawl animation along the currently-computed path. Calculate first.">Crawl</button>
             <button id="clear-path" class="path-btn" style="flex: 1 1 22%; min-width: 80px;" title="Clear the active forensic path overlay">Clear</button>
             <button id="path-show-all" class="path-btn" style="flex: 1 1 22%; min-width: 80px;" disabled title="Light up every candidate path simultaneously instead of one at a time">Show all</button>
           </div>
-          <!-- Path picker retained (hidden by default) so K-shortest-paths
-               navigation still works after a Crawl — appears only when
-               multiple candidate paths exist. -->
+          
           <div id="path-picker" style="display: none; font-size: 11px; margin-top: 6px; align-items: center; gap: 6px;">
             <button id="path-prev" class="path-btn" style="padding: 2px 10px; margin: 0;">Prev</button>
             <span id="path-picker-label" style="color: var(--ink); flex: 1; text-align: center;"></span>
@@ -3420,15 +3002,9 @@
             <button id="path-find-further" class="path-btn" style="width: 100%;" disabled title="Block the most-used intermediate nodes from current candidates and re-search to surface a genuinely different, longer route">Find further route</button>
           </div>
           <div id="path-status" style="font-size: 11px; margin-top: 6px;"></div>
-          <!-- Documented routes — populated after Crawl path / Find further.
-               One block per candidate showing its hop sequence (node → role → node).
-               Click a route header to spotlight just that route. -->
+          
           <div id="path-routes-list" style="margin-top: 10px;"></div>
-          <!-- Hidden shims for pre-existing JS that reads these IDs.
-               The Path section is gone from the UI, but code paths still
-               touch state.pathSourceId / pathTargetId labels — keep the
-               elements in the DOM so they can be written to without null
-               checks, just display:none so they never render. -->
+          
           <div style="display: none;">
             <span id="sidebar-path-from">(not set)</span>
             <span id="sidebar-path-to">(not set)</span>
@@ -3439,15 +3015,9 @@
         </section>
       </div>
 
-      <!-- Scenarios page — overlay picker + stepwise walkthrough.
-           Activated by top-bar Scenarios button. Main view (Graph /
-           Substrate / Matrix) gets highlighting overlay while the picker
-           + step cards live in the sidebar. Moved to LEFT dock per user request. -->
+      
       <div class="tool-pane-page" id="tool-pane-scenarios">
-        <!-- Play walkthrough — hoisted to the very top of the scenarios
-             pane per user direction (2026-04-23). Single dedicated
-             action button above everything else (tabs, picker, summary).
-             Only actionable when a scenario with `steps:` is active. -->
+        
         <button id="scenario-play-btn" class="path-btn" style="width: 100%; margin: 0 0 10px 0;">Play walkthrough</button>
         <div id="overlay-tabs" role="tablist">
           <button class="overlay-tab active" data-overlay-tab="chains" role="tab">Convergence Chains</button>
@@ -3463,14 +3033,9 @@
         <div id="focus-indicator"></div>
       </div>
 
-      <!-- Config page — always-visible, pinned at the BOTTOM of the left
-           dock per user request. Pair/Scenarios stack above it when their
-           launcher buttons are active. setToolPaneMode always keeps this
-           .active; pair/scenarios pane toggle their own .active on/off. -->
+      
       <div class="tool-pane-page active collapsed" id="tool-pane-config">
-        <!-- Repurposed (2026-04-24): the substrate-overlay hint box is
-             now an artifact search bar. Type to filter by name / alias;
-             click a suggestion to spotlight the node + open its details. -->
+        
         <div id="node-search-wrap">
           <input id="node-search-input" type="search" placeholder="Search artifacts + concepts..." autocomplete="off" spellcheck="false">
           <div id="node-search-results"></div>
@@ -3530,9 +3095,7 @@
     </div>
   </div>
 
-  <!-- Right dock — selected-node identification + inspector. Per-user
-       swap: the "click a node" id card + field-level details live here.
-       Pair Inspector + Scenarios moved to the left dock. -->
+  
   <div id="right-dock">
     <div class="dock-header">
       <span id="right-dock-title">Inspection</span>
@@ -3554,11 +3117,7 @@
 
   <div id="view-container"></div>
 
-  <!-- Canvas rotation knob — fixed widget in the bottom-right of the
-       view area. Drag the arrow to spin the canvas; double-click to
-       reset to 0deg. Applies CSS transform:rotate to the current view's
-       SVG element (3D view's orbit controls handle rotation natively,
-       so this only affects 2D views). -->
+  
   <div id="canvas-rotate-knob" title="Drag to rotate canvas · double-click to reset">
     <svg viewBox="-50 -50 100 100" width="46" height="46">
       <circle cx="0" cy="0" r="42" class="knob-ring"></circle>
@@ -3568,15 +3127,9 @@
     </svg>
   </div>
 
-  <!-- Legend — floating panel, bottom-left of canvas (hugs sidebar's
-       right edge). Rows are click-to-toggle filters for link colors,
-       source classes, tags, and node kinds. Collapsible via toggle. -->
+  
   <div id="legend" class="panel collapsed">
-    <!-- Full-width sticky header — click anywhere on it to collapse/expand
-         the legend. Stays visible regardless of scroll position inside
-         the legend body. Chevron on the right is decorative now.
-         Default state: collapsed (per user request 2026-04-23) so the
-         canvas isn't immediately covered by a tall legend on first load. -->
+    
     <div id="legend-header" title="Collapse/expand legend">
       <h4 id="legend-title">Legend</h4>
       <span id="legend-toggle">v</span>
@@ -3607,12 +3160,7 @@
     <div id="legend-body" class="legend-body"></div>
   </div>
 
-  <!-- Export controls — floating button + scale dropdown at bottom-left
-       of the canvas. The dropdown picks the PNG scale; the button
-       triggers the export at that scale. SVG-based 2D views (graph,
-       substrate, scatter, chord) rasterize via canvas; the 3D substrate
-       is captured directly from its WebGL canvas. 16× is near the
-       browser's max canvas dimension and may take 5–15s on big graphs. -->
+  
   <div id="export-controls">
     <button id="export-png-btn" title="Export current view as PNG at the selected scale">&#128247;</button>
     <select id="export-png-scale" title="PNG output scale (relative to viewport)">
@@ -11504,16 +11052,6 @@
   });
   </script>
 
-<!-- ============================================================
-     NOTIFICATION SYSTEM — H-002 Component 1 (PI-01) — Cycle 4
-     ============================================================
-     Self-contained: CSS + HTML container + JS API in one block.
-     Position-fixed top-right; max 3 visible; severity-colored cards
-     matching existing panel UI (var(--panel) + var(--stroke)).
-     API: notify({severity, title, body, ttl, onClick, id});
-          notify.dismiss(id); notify.replace(id, props).
-     Severities: info / success / progress / warning / error / discovery.
-     ============================================================ -->
 <style>
   #notification-stack {
     position: fixed;
@@ -11553,12 +11091,9 @@
   .notification.is-clickable      { cursor: pointer; }
   .notification.is-exiting        { animation: notification-exit 0.22s ease-in forwards; }
   .notification .notif-title { font-size: 12px; font-weight: 600; color: var(--ink-dim); line-height: 1.2; letter-spacing: 0.08em; text-transform: uppercase; }
-  /* Parsed-title parts: prefix keeps the existing small/dim/uppercase look
-     (step ordinal, casey score, etc.); the actual title text after the
-     em-dash separator is hoisted to its own line, larger and bold, so the
-     analyst's eye lands on the question first. */
+  
   .notification .notif-title-prefix {
-    /* inherits from .notif-title — small, dim, uppercase, wide-tracked */
+    
   }
   .notification .notif-title-text {
     display: block;
@@ -11571,9 +11106,7 @@
     line-height: 1.3;
   }
   .notification .notif-body  { font-size: 17px; color: var(--ink); margin-top: 6px; line-height: 1.35; white-space: pre-wrap; }
-  /* Join-key display — "id1" JOINKEY "id2" with distinct fonts per token:
-     artifact IDs stay monospace (slug aesthetic); the join-key concept is
-     rendered in uppercase sans-serif so it reads as a relation, not a name. */
+  
   .notification .notif-body .join-id {
     font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
     color: #cde1f5; background: rgba(124,196,255,0.08);
@@ -11590,9 +11123,6 @@
   }
   .notification .notif-body .caveat-icon { color: #ffd166; margin-right: 6px; }
 
-  /* notif-ref — inline cross-reference to a graph node inside the
-     notification body (Artifacts row chips + inline references parsed
-     out of the Proof prose). Styled as a clickable chip/link. */
   .notification .notif-body .notif-ref {
     color: #78e1ff;
     cursor: pointer;
@@ -11605,8 +11135,7 @@
     background: rgba(120, 225, 255, 0.14);
     border-bottom-color: transparent;
   }
-  /* When the ref is also the join-id pill (Artifacts row), keep the pill
-     look but pick up the clickable-link cursor + hover pop. */
+  
   .notification .notif-body .join-id.notif-ref {
     border-bottom: none;
   }
@@ -11740,10 +11269,10 @@
     window.notify = api;
   })();
 </script>
-<!-- END NOTIFICATION SYSTEM — H-002 Component 1 -->
 
 
-<!-- H-023 stage 2 — Display modes overlays + Save view buttons (sandbox merge) -->
+
+
 <script>
   // H-023 #3 — Timestamp resolution rings overlay.
   // Color-coded ring per artifact based on finest temporal-index resolution.
@@ -12352,15 +11881,13 @@
     }, 200);
   })();
 </script>
-<!-- END H-023 stage 2 -->
 
 
-<!-- (Removed sub-tab data-conditional visibility script — Pair Inspector
-     is now a single unified page with A/B + Path stacked; no subtabs.) -->
 
 
-<!-- Simplified palette toggle: flatten all node + link colors to a neutral
-     3-tone palette via body data-attr that drives CSS overrides. -->
+
+
+
 <script>
   (function () {
     function wire() {
@@ -12385,13 +11912,10 @@
     }, 200);
   })();
 </script>
-<!-- END simplified palette -->
 
 
-<!-- High-degree-hub muting: tag heavily-connected identifier concepts so
-     CSS can desaturate their visual treatment. Per user 2026-04-23:
-     UserSID + ExecutablePath specifically (highest-degree identifier
-     concepts) visually dominate the original views. -->
+
+
 <script>
   (function () {
     // Explicit IDs to always mute (high-confidence "hub" concepts the user flagged)
@@ -12444,13 +11968,10 @@
     setInterval(applyTags, 800);
   })();
 </script>
-<!-- END high-degree-hub muting -->
 
 
-<!-- ULTRASUPERHIGHLIGHT — JS hook for the dramatic node+edge highlight CSS.
-     window.__ultrasuperhighlight(nodeId, on=true) — toggle highlight on a
-     node + all edges touching it.
-     window.__ultrasuperhighlight.clear() — remove from everything. -->
+
+
 <script>
   (function () {
     function applyTo(nodeId, on) {
@@ -12496,7 +12017,7 @@
     window.__ush = ush;
   })();
 </script>
-<!-- END ultrasuperhighlight -->
+
 
 </body>
 </html>

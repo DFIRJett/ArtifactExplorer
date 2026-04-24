@@ -109,6 +109,7 @@ known-artifacts:
     - name: IconCache
       location: "%LOCALAPPDATA%\\IconCache.db (legacy) + %LOCALAPPDATA%\\Microsoft\\Windows\\Explorer\\iconcache_*.db"
       value: per-size icon cache; supplements thumbcache for non-image files
+provenance: [libyal-libesedb]
 ---
 
 # Windows Thumbnail Cache

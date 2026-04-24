@@ -6914,6 +6914,24 @@ sources:
     - windows-registry-hive
     artifacts:
     - Uninstall-Keys
+- id: nist-fips-180-4
+  author: National Institute of Standards and Technology
+  year: '2015'
+  title: Secure Hash Standard (SHS), FIPS PUB 180-4
+  publisher: NIST
+  url: https://csrc.nist.gov/pubs/fips/180-4/upd1/final
+  doi: 10.6028/NIST.FIPS.180-4
+  apa: National Institute of Standards and Technology. (2015). Secure Hash Standard (SHS), FIPS PUB 180-4. NIST. https://doi.org/10.6028/NIST.FIPS.180-4
+  note: Federal Information Processing Standard for the SHA family of cryptographic hash functions (SHA-1, SHA-224, SHA-256,
+    SHA-384, SHA-512, SHA-512/224, SHA-512/256). Authoritative source for the executable-hash datatype used as a join key
+    across artifacts that record file hashes (Sysmon, Amcache, AppLocker, etc.).
+  kind: standards-doc
+  authority: primary
+  coverage:
+    substrates: []
+    artifacts: []
+    concepts:
+    - ExecutableHash
 - id: nsacyber-event-forwarding-usb-detection
   author: NSA Cybersecurity Directorate
   year: n.d.
@@ -7238,6 +7256,24 @@ sources:
     - windows-text-log
     artifacts:
     - AnyDesk-Logs
+- id: rfc-1002-netbios
+  author: NetBIOS Working Group
+  year: '1987'
+  title: 'Protocol Standard for a NetBIOS Service on a TCP/UDP Transport: Detailed Specifications, RFC 1002'
+  publisher: IETF
+  url: https://datatracker.ietf.org/doc/html/rfc1002
+  apa: 'NetBIOS Working Group. (1987). Protocol Standard for a NetBIOS Service on a TCP/UDP Transport: Detailed Specifications
+    (RFC 1002). IETF. https://datatracker.ietf.org/doc/html/rfc1002'
+  note: IETF Internet Standard defining the NetBIOS naming service over TCP/UDP — the spec underwriting the MachineNetBIOS
+    join key (16-character host identifier persisted in registry, event-log SourceHostName, and SMB session events). Pairs
+    with RFC 1001 (concepts and methods).
+  kind: standards-doc
+  authority: primary
+  coverage:
+    substrates: []
+    artifacts: []
+    concepts:
+    - MachineNetBIOS
 - id: rfc-1035-domain-names
   author: Mockapetris, P.
   year: '1987'

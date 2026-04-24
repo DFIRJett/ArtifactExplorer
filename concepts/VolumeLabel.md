@@ -22,6 +22,7 @@ known-containers:
   - ShellLNK
   - ShellBags
   - EMDMgmt
+provenance: [carrier-2005-file-system-forensic-analysis]
 ---
 
 # Volume Label

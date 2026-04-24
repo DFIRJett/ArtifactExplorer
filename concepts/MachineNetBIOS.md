@@ -19,6 +19,7 @@ known-containers:
   - ShellLNK
   - AutomaticDestinations
   - CustomDestinations
+provenance: [rfc-1002-netbios]
 ---
 
 # Machine NetBIOS ID

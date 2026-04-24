@@ -101,6 +101,7 @@ known-containers:
   - TS-Client-MRU
   - TerminalServerClient-Default
   - WindowsPortableDevices
+provenance: [carrier-2005-file-system-forensic-analysis]
 ---
 
 # Registry Key Path

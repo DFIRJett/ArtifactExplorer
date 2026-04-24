@@ -53,6 +53,7 @@ known-containers:
   - LastVisitedPidlMRU
   - Defender-MPLog
   - YARA-hits
+provenance: [carrier-2005-file-system-forensic-analysis]
 ---
 
 # Executable Path

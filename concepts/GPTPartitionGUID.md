@@ -22,6 +22,7 @@ known-containers:
   - PartitionDiagnostic-1006     # PartitionTableBytes contains the GPT entries
   # Registry binding — MountedDevices keys GPT-case volume bindings via 24-byte payload
   - MountedDevices               # binding-data Format 3: 'DMIO:ID:' + 16-byte PartitionGUID
+provenance: [carrier-2005-file-system-forensic-analysis]
 ---
 
 # GPT Partition GUID

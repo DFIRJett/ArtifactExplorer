@@ -29,6 +29,7 @@ known-containers:
   - Security-4658
   - Security-4663
   - Security-5140
+provenance: [ms-event-4624, casey-2002-error-uncertainty-loss-digital-evidence]
 ---
 
 # Logon Session Id (LUID)

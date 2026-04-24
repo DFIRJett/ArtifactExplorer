@@ -24,6 +24,7 @@ known-containers:
   - CustomDestinations
   - TaskbarLayout
   - MUICache
+provenance: [ms-sysinternals-autoruns, aboutdfir-com-2023-windows-11-snipping-tool-foren]
 ---
 
 # AppID (AppUserModelID hash)

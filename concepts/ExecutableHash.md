@@ -27,6 +27,7 @@ known-containers:
   - Defender-MPLog
   - YARA-hits
   - Prefetch
+provenance: [nist-fips-180-4, ms-sysinternals-autoruns]
 ---
 
 # Executable Hash

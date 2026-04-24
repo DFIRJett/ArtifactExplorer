@@ -24,6 +24,7 @@ known-containers:
   - Firewall-2004
   - Firewall-2006
   - Firewall-2033
+provenance: [ms-windows-defender-firewall-registry]
 ---
 
 # Firewall Rule Name

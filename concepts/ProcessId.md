@@ -45,6 +45,7 @@ known-containers:
   - Sysmon-13
   # Process termination (parallel to 4689 which we haven't authored)
   - Sysmon-10
+provenance: [hartong-2024-sysmon-modular-10-process-acce]
 ---
 
 # Process Id (PID)

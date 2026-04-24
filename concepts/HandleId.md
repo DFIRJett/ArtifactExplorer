@@ -27,6 +27,7 @@ known-containers:
   - Security-4657     # registry value modified (accessHandle)
   - Security-4658     # handle closed (closedHandle)
   - Security-4663     # access attempted (accessHandle)
+provenance: [ms-learn-audit-handle-manipulation]
 ---
 
 # Handle Id

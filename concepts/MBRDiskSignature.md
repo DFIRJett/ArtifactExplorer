@@ -27,6 +27,7 @@ known-containers:
   - PartitionDiagnostic-1006     # EventData\Mbr\Signature (and raw MBR via EventData\Mbr)
   # Registry binding — MountedDevices uses it to key MBR-case volume bindings
   - MountedDevices               # binding-data Format 2, first 4 bytes
+provenance: [carrier-2005-file-system-forensic-analysis, hale-2018-partition-diagnostic-p1]
 ---
 
 # MBR Disk Signature

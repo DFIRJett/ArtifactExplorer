@@ -1,42 +1,71 @@
 # ArtifactExplorer
 
-A personal DFIR training regimen driven by Claude Code + the `cybersecurity-skills` plugin.
+Interactive DFIR knowledge graph for Windows forensic artifacts. Browse 292
+artifacts across 15 substrates, see how they corroborate each other through
+34 Tier-2 convergences, and walk 11 Tier-3 case-study scenarios end-to-end.
 
-## What this is
-A reference + training workspace for building tier-3 DFIR analyst skills. The heavy lifting (concept explanations, artifact references, tool walkthroughs) comes from the 98 DFIR skills in the `cybersecurity-skills` plugin. This repo layers structure on top: a study roadmap, progress log, curated skill index, and external training material links.
+**Live site:** https://dfirjett.github.io/ArtifactExplorer/
 
-## Setup
+## What it is
 
-From inside Claude Code, run:
+A structured DFIR corpus + interactive viewer built around a three-tier
+evidentiary model:
+
+- **Tier 1 — Artifacts.** One entry per forensic container (registry key,
+  event-log record, SQLite database, etc.). Documents fields, locations,
+  encodings, observations, anti-forensic surface, and bibliographic provenance.
+- **Tier 2 — Convergences.** Multi-artifact inferences joined on a shared
+  pivot identifier (a SID, LUID, GUID, serial). Encodes how independent
+  artifacts corroborate the same forensic claim.
+- **Tier 3 — Scenarios.** Case-study walkthroughs with stepwise investigative
+  questions, each step naming the artifacts that answer it, the join key
+  threading the steps together, and a Casey C-scale strength rating.
+
+The schema is documented field-by-field with academic reasoning + sourced
+citations in **[01-SCHEMA.md](01-SCHEMA.md)**.
+
+## Run the viewer locally
 
 ```
-/plugin marketplace add mukul975/Anthropic-Cybersecurity-Skills
-/plugin install cybersecurity-skills@anthropic-cybersecurity-skills
+python tools/serve.py
 ```
 
-Or, if you already have the repo cloned locally:
+Then open http://localhost:8100/viewer/index.html
+
+## Rebuild the graph from source
 
 ```
-/plugin marketplace add C:\Users\mondr\Documents\ProgFor\ACS\Anthropic-Cybersecurity-Skills
-/plugin install cybersecurity-skills@anthropic-cybersecurity-skills
+python tools/build-graph.py
 ```
 
-Verify with `/plugin list`.
-
-## How to use it
-- Ask Claude anything DFIR-related — it will pull the relevant skill from the plugin automatically.
-- "Walk me through analyzing a memory dump with Volatility" → loads `conducting-memory-forensics-with-volatility`.
-- "What Windows artifacts show program execution?" → pulls Amcache, Prefetch, ShellBags, UserAssist skills.
-- "Plan my study for this week" → Claude reads `training/roadmap.md` and `progress.md`.
+Walks `artifacts/`, `convergences/`, `scenarios/`, `concepts/`, `substrates/`
+and the `schema/sources.yaml` registry. Emits `viewer/data.json` (~2.6MB
+minified) which the viewer loads.
 
 ## Layout
+
 ```
 ArtifactExplorer/
-├── CLAUDE.md               # Project instructions for Claude Code
-├── skills-index.md         # Curated DFIR skill pointers into the plugin
-├── training/
-│   ├── roadmap.md          # Tier-1 → tier-3 study plan
-│   └── resources.md        # External training materials
-├── progress.md             # Your practice log
-└── gaps.md                 # Topics not covered by the plugin
+├── 01-SCHEMA.md            # Schema reference + academic reasoning + citations
+├── README.md
+├── CHANGELOG.md
+├── artifacts/              # 292 Tier-1 artifact files, by substrate
+├── convergences/           # 34 Tier-2 join-chain definitions
+├── scenarios/              # 11 Tier-3 case-study walkthroughs
+├── concepts/               # Concept (join-key) definitions
+├── substrates/             # Substrate-class definitions
+├── schema/                 # JSON schemas + sources.yaml (470 entries)
+├── docs/
+│   ├── architecture.md     # System architecture overview
+│   └── nomenclature.md     # Naming conventions
+├── topics/                 # Forensic methodology references
+├── tools/                  # Build pipeline + analytic scripts
+└── viewer/                 # Interactive d3-based force-graph viewer
+    ├── index.html
+    └── data.json           # Compiled graph data
 ```
+
+## Citing
+
+Citation guidance — including APA / MLA / IEEE forms for the schema doc and
+the AI-assistance disclosure — is at the bottom of [01-SCHEMA.md](01-SCHEMA.md).

@@ -761,7 +761,10 @@ def main() -> None:
     annotate_audit_priorities(data)
     VIEWER_DIR.mkdir(exist_ok=True)
     out = VIEWER_DIR / "data.json"
-    out.write_text(json.dumps(data, indent=2), encoding="utf-8")
+    # Minified output for production serving — ~30%+ smaller transfer for the
+    # viewer. Source-of-truth lives in artifacts/, convergences/, scenarios/, etc.
+    # Pretty-print for human inspection: python -c "import json,sys; print(json.dumps(json.load(open(sys.argv[1])), indent=2))" viewer/data.json
+    out.write_text(json.dumps(data, separators=(",", ":"), ensure_ascii=False), encoding="utf-8")
     s = data["summary"]
     print(f"Wrote {out}")
     print(f"  Artifacts:        {s['artifact-count']}")

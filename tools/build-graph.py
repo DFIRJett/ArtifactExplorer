@@ -759,6 +759,26 @@ def annotate_audit_priorities(data: dict) -> None:
 def main() -> None:
     data = build()
     annotate_audit_priorities(data)
+    # Build-time source coverage gate (Bar A — every entity has at least
+    # one cited source-id resolving to a registered + apa-validated entry).
+    # Blocks the build when violated so a publish-unsafe data.json never
+    # gets written. Pass --skip-coverage-gate to bypass during development.
+    import sys as _sys
+    if "--skip-coverage-gate" not in _sys.argv:
+        try:
+            from verify_source_coverage import verify as _verify_cov
+            ok, gaps = _verify_cov(strict=False)
+            if not ok:
+                print("[BUILD GATE FAIL] Source coverage gaps detected:")
+                for cat, items in gaps.items():
+                    if not items: continue
+                    print("  -- " + cat + " (" + str(len(items)) + ") --")
+                    for it in items[:5]: print("     " + it)
+                    if len(items) > 5: print("     ... and " + str(len(items) - 5) + " more")
+                print("Re-run after fixing, or pass --skip-coverage-gate to override.")
+                _sys.exit(1)
+        except ImportError:
+            print("[warn] verify_source_coverage not importable; skipping gate")
     VIEWER_DIR.mkdir(exist_ok=True)
     out = VIEWER_DIR / "data.json"
     # Minified output for production serving — ~30%+ smaller transfer for the

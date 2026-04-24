@@ -115,6 +115,7 @@ anti-forensic:
   - AppID matches a CustomDestinations file without a corresponding AutomaticDestinations = app uses only custom jump-list
     API (less common; Microsoft Store apps sometimes)
 provenance: []
+provenance: [libyal-libolecf, ms-cfb]
 ---
 
 # Custom Destinations Jump List

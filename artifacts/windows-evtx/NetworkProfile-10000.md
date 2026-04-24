@@ -1,15 +1,21 @@
 ---
 name: NetworkProfile-10000
-title-description: "Network connection"
-aliases: [network connected, NLA profile change]
+title-description: Network connection
+aliases:
+- network connected
+- NLA profile change
 link: network
-tags: [per-interface, network-history]
+tags:
+- per-interface
+- network-history
 volatility: persistent
 interaction-required: none
 substrate: windows-evtx
 substrate-instance: Microsoft-Windows-NetworkProfile/Operational
 platform:
-  windows: {min: '8', max: '11'}
+  windows:
+    min: '8'
+    max: '11'
 location:
   channel: Microsoft-Windows-NetworkProfile/Operational
   event-id: 10000
@@ -18,11 +24,11 @@ fields:
 - name: Name
   kind: label
   location: EventData → Name
-  note: "network profile name — SSID for WiFi, 'Network N' for Ethernet, domain name for domain profiles"
+  note: network profile name — SSID for WiFi, 'Network N' for Ethernet, domain name for domain profiles
 - name: Category
   kind: flag
   location: EventData → Category
-  note: "0=Public, 1=Private, 2=Domain — firewall scope driver"
+  note: 0=Public, 1=Private, 2=Domain — firewall scope driver
 - name: Description
   kind: label
   location: EventData → Description
@@ -38,7 +44,8 @@ fields:
 observations:
 - proposition: NETWORK_CONNECTED
   ceiling: C3
-  note: "Host joined a network (wired or wireless). Pairs with NetworkProfile-10001 (disconnected) to bound network-presence windows. Gives authoritative SSID / profile name timeline — critical for geolocation and when-was-host-on-which-network questions."
+  note: Host joined a network (wired or wireless). Pairs with NetworkProfile-10001 (disconnected) to bound network-presence windows. Gives authoritative SSID / profile name timeline — critical for geolocation
+    and when-was-host-on-which-network questions.
   qualifier-map:
     object.network.name: field:Name
     object.network.category: field:Category
@@ -46,7 +53,8 @@ observations:
 anti-forensic:
   write-privilege: service
 provenance:
-  - ms-network-list-service-and-the-signat
+- ms-network-list-service-and-the-signat
+- regripper-plugins
 ---
 
 # NetworkProfile-10000

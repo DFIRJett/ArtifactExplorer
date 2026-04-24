@@ -99,6 +99,7 @@ anti-forensic:
   - tool: manual hive edit
     typically-removes: surgical
 provenance: []
+provenance: [libyal-libregf, regripper-plugins]
 ---
 
 # Amcache-InventoryApplication

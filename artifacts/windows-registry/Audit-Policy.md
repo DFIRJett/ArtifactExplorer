@@ -59,6 +59,7 @@ exit-node:
     parsing of SECURITY hive via auditpol-offline parsers or raw blob
     decode (per ms-advanced-audit-policy subcategory-bitmap spec).
   identifier-terminals-referenced: []
+provenance: [libyal-libregf, ms-advanced-audit-policy]
 ---
 
 # Audit-Policy (PolAdtEv)

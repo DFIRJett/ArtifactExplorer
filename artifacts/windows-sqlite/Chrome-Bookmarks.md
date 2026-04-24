@@ -48,6 +48,7 @@ anti-forensic:
   known-cleaners:
   - {tool: Bookmark manager delete, typically-removes: full}
 provenance: []
+provenance: [chromium-history-schema]
 ---
 
 # Chrome-Bookmarks

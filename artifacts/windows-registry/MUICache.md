@@ -62,6 +62,7 @@ anti-forensic:
   write-privilege: user
   integrity-mechanism: none
 provenance: []
+provenance: [libyal-libregf, regripper-plugins]
 ---
 
 # MUICache (Shell Display-Name Cache)

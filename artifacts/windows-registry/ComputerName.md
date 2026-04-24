@@ -78,6 +78,7 @@ exit-node:
     No cryptographic chain.
   identifier-terminals-referenced:
     - MachineNetBIOS
+provenance: [libyal-libregf]
 ---
 
 # ComputerName

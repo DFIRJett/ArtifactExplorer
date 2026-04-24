@@ -82,6 +82,7 @@ exit-node:
   preconditions: "NTUSER hive accessible; transaction logs replayed; user did not clear via IE/Edge 'Delete browsing history' → Form data + history toggle; joiner parser correlates TypedURLs and TypedURLsTime subkeys"
   identifier-terminals-referenced:
     - UserSID
+provenance: [libyal-libregf, regripper-plugins]
 ---
 
 # TypedURLs

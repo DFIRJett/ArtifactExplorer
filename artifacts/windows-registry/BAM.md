@@ -117,6 +117,7 @@ anti-forensic:
   - BAM timestamps earlier than Prefetch's last-run for same exe = Prefetch was recreated after a cleanup (timestamp skew
     is the signal)
 provenance: []
+provenance: [libyal-libregf, regripper-plugins]
 ---
 
 # BAM — Background Activity Moderator

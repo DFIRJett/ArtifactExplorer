@@ -51,6 +51,7 @@ anti-forensic:
   known-cleaners:
   - {tool: Dropbox → unlink, typically-removes: partial (config entries retained)}
 provenance: []
+provenance: [sqlite-org-fileformat]
 ---
 
 # Dropbox-filecache

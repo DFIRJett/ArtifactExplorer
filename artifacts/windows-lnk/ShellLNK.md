@@ -189,6 +189,7 @@ anti-forensic:
   - LNK MachineID ≠ current host = LNK was created elsewhere and copied in
   - LNK volume-serial ≠ current volume-serial for same volume-GUID = the volume was reformatted since the LNK was created
 provenance: []
+provenance: [ms-shllink, libyal-liblnk]
 ---
 
 # Shell Link (LNK) File

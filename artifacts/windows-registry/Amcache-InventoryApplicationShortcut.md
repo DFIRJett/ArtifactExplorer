@@ -68,6 +68,7 @@ anti-forensic:
   - shortcuts in Startup folders pointing at LOLBins (powershell.exe with args) — persistence drop
   - shortcut targets in %TEMP% / %APPDATA% / %PROGRAMDATA% root — malware drop
 provenance: []
+provenance: [libyal-libregf, regripper-plugins]
 ---
 
 # Amcache-InventoryApplicationShortcut

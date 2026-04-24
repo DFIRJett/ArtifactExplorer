@@ -1,15 +1,20 @@
 ---
 name: AppLocker-8004
-title-description: "File was allowed to run (audit) / File was not allowed to run (enforce)"
-aliases: [AppLocker execution blocked]
+title-description: File was allowed to run (audit) / File was not allowed to run (enforce)
+aliases:
+- AppLocker execution blocked
 link: security
-tags: [detection, audit-dependent]
+tags:
+- detection
+- audit-dependent
 volatility: persistent
 interaction-required: none
 substrate: windows-evtx
 substrate-instance: Microsoft-Windows-AppLocker/EXE and DLL
 platform:
-  windows: {min: '7', max: '11'}
+  windows:
+    min: '7'
+    max: '11'
 location:
   channel: Microsoft-Windows-AppLocker/EXE and DLL
   event-id: 8004
@@ -19,17 +24,20 @@ fields:
   kind: identifier
   location: EventData → UserSid
   references-data:
-  - {concept: UserSID, role: actingUser}
+  - concept: UserSID
+    role: actingUser
 - name: FullFilePath
   kind: path
   location: EventData → FullFilePath
   references-data:
-  - {concept: ExecutablePath, role: scannedTarget}
+  - concept: ExecutablePath
+    role: scannedTarget
 - name: FileHash
   kind: hash
   location: EventData → FileHash
   references-data:
-  - {concept: ExecutableHash, role: scannedHash}
+  - concept: ExecutableHash
+    role: scannedHash
 - name: TimeCreated
   kind: timestamp
   location: System → TimeCreated
@@ -39,7 +47,7 @@ fields:
 observations:
 - proposition: EXECUTION_BLOCKED
   ceiling: C3
-  note: "AppLocker policy blocked an execution attempt. Direct evidence that SOMEONE tried to run the binary AND AppLocker was active."
+  note: AppLocker policy blocked an execution attempt. Direct evidence that SOMEONE tried to run the binary AND AppLocker was active.
   qualifier-map:
     actor.user.sid: field:UserSid
     object.file.path: field:FullFilePath
@@ -48,7 +56,8 @@ observations:
 anti-forensic:
   write-privilege: service
 provenance:
-  - ms-applocker-policy-storage-and-enforc
+- ms-applocker-policy-storage-and-enforc
+- kape-files-repo
 ---
 
 # AppLocker-8004

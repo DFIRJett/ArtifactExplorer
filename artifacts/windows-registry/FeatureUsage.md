@@ -80,6 +80,7 @@ anti-forensic:
   - tool: manual reg delete of FeatureUsage tree
     typically-removes: full (wipes all user taskbar history)
 provenance: []
+provenance: [libyal-libregf, regripper-plugins]
 ---
 
 # FeatureUsage

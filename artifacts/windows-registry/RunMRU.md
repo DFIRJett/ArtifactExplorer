@@ -81,6 +81,7 @@ exit-node:
   identifier-terminals-referenced:
     - UserSID
     - ExecutablePath
+provenance: [libyal-libregf, regripper-plugins]
 ---
 
 # RunMRU

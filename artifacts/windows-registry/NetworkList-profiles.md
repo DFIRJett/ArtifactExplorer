@@ -105,7 +105,8 @@ anti-forensic:
   - tool: netsh wlan delete profile name=<SSID>
     typically-removes: full (Wi-Fi only)
 provenance:
-  - ms-network-list-service-and-the-signat
+- ms-network-list-service-and-the-signat
+- regripper-plugins
 ---
 
 # NetworkList Profiles

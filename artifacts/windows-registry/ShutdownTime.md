@@ -1,6 +1,6 @@
 ---
 name: ShutdownTime
-title-description: "Last-clean-shutdown FILETIME under HKLM\\SYSTEM\\CurrentControlSet\\Control\\Windows → ShutdownTime"
+title-description: Last-clean-shutdown FILETIME under HKLM\SYSTEM\CurrentControlSet\Control\Windows → ShutdownTime
 aliases:
 - ShutdownTime value
 - last shutdown registry
@@ -21,14 +21,15 @@ platform:
     max: '2022'
 location:
   hive: SYSTEM
-  path: "CurrentControlSet\\Control\\Windows"
+  path: CurrentControlSet\Control\Windows
   value: ShutdownTime
   addressing: hive+key-path+value
-  note: "8-byte FILETIME stored as REG_BINARY under the Windows key. Updated by the Session Manager (smss.exe) at the last CLEAN shutdown of the system. Unmodified on abrupt power-off or system crash — in that case the value reflects the PRIOR clean shutdown, which is itself a signal (delta between ShutdownTime and next boot can reveal crashed-without-shutdown events)."
+  note: 8-byte FILETIME stored as REG_BINARY under the Windows key. Updated by the Session Manager (smss.exe) at the last CLEAN shutdown of the system. Unmodified on abrupt power-off or system crash — in
+    that case the value reflects the PRIOR clean shutdown, which is itself a signal (delta between ShutdownTime and next boot can reveal crashed-without-shutdown events).
 fields:
 - name: last-shutdown
   kind: timestamp
-  location: "Control\\Windows\\ShutdownTime value"
+  location: Control\Windows\ShutdownTime value
   type: REG_BINARY
   encoding: 8-byte filetime-le
   clock: system
@@ -36,7 +37,8 @@ fields:
   references-data:
   - concept: FILETIME100ns
     role: absoluteTimestamp
-  note: "Timestamp of last clean shutdown. Directly readable as a Windows FILETIME. Canonical source for answering 'when was the machine last cleanly shut down?' — used in incident timelines, 'was the host on at time X?' queries, and cross-reference with System-1074 / System-6006 shutdown events."
+  note: Timestamp of last clean shutdown. Directly readable as a Windows FILETIME. Canonical source for answering 'when was the machine last cleanly shut down?' — used in incident timelines, 'was the host
+    on at time X?' queries, and cross-reference with System-1074 / System-6006 shutdown events.
 - name: key-last-write
   kind: timestamp
   location: Control\\Windows key metadata
@@ -46,23 +48,17 @@ fields:
   references-data:
   - concept: FILETIME100ns
     role: absoluteTimestamp
-  note: "LastWrite on the Windows key updates whenever any child value changes. In normal operation the LastWrite mirrors the ShutdownTime value. Delta between the two is anomalous — suggests a write other than the canonical shutdown updater has touched this key."
+  note: LastWrite on the Windows key updates whenever any child value changes. In normal operation the LastWrite mirrors the ShutdownTime value. Delta between the two is anomalous — suggests a write other
+    than the canonical shutdown updater has touched this key.
 observations:
 - proposition: SYSTEM_LIFECYCLE
   ceiling: C3
-  note: 'A single-value artifact but forensically pivotal for any
-    timeline-reconstruction question where "was the machine running
-    at this moment?" matters. ShutdownTime provides a definitive
-    previous-clean-shutdown anchor. Combined with System-12
-    (OS-boot-time), analysts bracket the uptime window between the
-    previous shutdown and the current boot — within which all
-    real-time artifacts (memory, volatile registry, network sockets)
-    must have been captured. Also useful as a crash-detection
-    signal: if the current boot followed a ShutdownTime that is
-    significantly older than expected, the machine rebooted
-    abnormally (crash, power cycle, hard reset).'
+  note: 'A single-value artifact but forensically pivotal for any timeline-reconstruction question where "was the machine running at this moment?" matters. ShutdownTime provides a definitive previous-clean-shutdown
+    anchor. Combined with System-12 (OS-boot-time), analysts bracket the uptime window between the previous shutdown and the current boot — within which all real-time artifacts (memory, volatile registry,
+    network sockets) must have been captured. Also useful as a crash-detection signal: if the current boot followed a ShutdownTime that is significantly older than expected, the machine rebooted abnormally
+    (crash, power cycle, hard reset).'
   qualifier-map:
-    setting.registry-path: "CurrentControlSet\\Control\\Windows\\ShutdownTime"
+    setting.registry-path: CurrentControlSet\Control\Windows\ShutdownTime
     time.end: field:last-shutdown
 anti-forensic:
   write-privilege: admin
@@ -71,7 +67,9 @@ anti-forensic:
   - ShutdownTime significantly earlier than OS-boot-time of the current session = abnormal last shutdown (crash / power cycle / hard reset)
   - ShutdownTime manually overwritten to a value post-dating actual shutdown = tamper (rare; leaves key LastWrite evidence)
 provenance:
-  - ms-session-manager-smss-exe-shutdown-w
+- ms-session-manager-smss-exe-shutdown-w
+- regripper-plugins
+- libyal-libregf
 ---
 
 # ShutdownTime value

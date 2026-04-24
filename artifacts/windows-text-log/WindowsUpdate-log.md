@@ -63,6 +63,7 @@ anti-forensic:
     - "gap in timestamp stream > several days on an online system = WU service tampering"
     - "'Reporter' events with odd SourceURL = WSUS reconfiguration"
 provenance: []
+provenance: [kape-files-repo]
 ---
 
 # WindowsUpdate-log

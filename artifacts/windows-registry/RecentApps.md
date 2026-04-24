@@ -74,6 +74,7 @@ anti-forensic:
   - tool: manual reg delete of RecentApps tree
     typically-removes: full
 provenance: []
+provenance: [libyal-libregf, regripper-plugins]
 ---
 
 # RecentApps

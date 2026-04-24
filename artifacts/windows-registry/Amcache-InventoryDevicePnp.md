@@ -32,7 +32,7 @@ fields:
   kind: label
   location: Class value
   type: REG_SZ
-  note: 'DiskDrive | USB | HIDClass | PrintQueue | Net | Bluetooth | ...'
+  note: DiskDrive | USB | HIDClass | PrintQueue | Net | Bluetooth | ...
 - name: ClassGuid
   kind: identifier
   location: ClassGuid value
@@ -109,7 +109,8 @@ anti-forensic:
   - tool: manual hive edit
     typically-removes: surgical
 provenance:
-  - aboutdfir-nd-usb-devices-windows-artifact-r
+- aboutdfir-nd-usb-devices-windows-artifact-r
+- carrier-2005-file-system-forensic-analysis
 ---
 
 # Amcache-InventoryDevicePnp

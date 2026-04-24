@@ -105,6 +105,7 @@ anti-forensic:
   - SIEM copy of proxy logs vs. local copy mismatch = local-log tampering
   - Gaps in log sequence aligned with known incident window = deletion attempt
 provenance: []
+provenance: [kape-files-repo]
 ---
 
 # Web Proxy Access Log

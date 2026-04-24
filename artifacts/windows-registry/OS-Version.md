@@ -103,6 +103,7 @@ exit-node:
   preconditions: >-
     Read access to HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion.
   identifier-terminals-referenced: []
+provenance: [libyal-libregf]
 ---
 
 # OS-Version

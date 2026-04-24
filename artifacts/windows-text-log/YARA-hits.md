@@ -83,6 +83,7 @@ anti-forensic:
   - SIEM has YARA-hit entries not present in local log = local tampering
   - YARA-hit exists for a file no longer on disk = file was deleted after scan; quarantined or manually cleaned
 provenance: []
+provenance: [kape-files-repo]
 ---
 
 # YARA Scanner Match Log

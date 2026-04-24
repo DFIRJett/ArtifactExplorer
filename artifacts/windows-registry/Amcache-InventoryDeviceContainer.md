@@ -87,7 +87,8 @@ fields:
 observations:
 - proposition: DEVICE_PAIRED_OR_PRESENT
   ceiling: C3
-  note: Container-level device-history record. Unlike InventoryDevicePnp which captures per-logical-interface entries, InventoryDeviceContainer is one record per physical device. Preserves friendly name, model, and pairing state.
+  note: Container-level device-history record. Unlike InventoryDevicePnp which captures per-logical-interface entries, InventoryDeviceContainer is one record per physical device. Preserves friendly name,
+    model, and pairing state.
   qualifier-map:
     object.device.container: field:container-id
     object.device.name: field:FriendlyName
@@ -101,7 +102,8 @@ anti-forensic:
   - tool: Windows Settings Bluetooth unpair
     typically-removes: flips IsPaired=0 but keeps record
 provenance:
-  - aboutdfir-nd-usb-devices-windows-artifact-r
+- aboutdfir-nd-usb-devices-windows-artifact-r
+- carrier-2005-file-system-forensic-analysis
 ---
 
 # Amcache-InventoryDeviceContainer

@@ -60,6 +60,7 @@ observations:
 anti-forensic:
   write-privilege: unknown
 provenance: []
+provenance: [libyal-libregf, regripper-plugins]
 ---
 
 # DAM (Desktop Activity Moderator)

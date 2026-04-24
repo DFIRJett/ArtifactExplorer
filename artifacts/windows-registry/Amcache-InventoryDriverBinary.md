@@ -121,6 +121,7 @@ detection-priorities:
   - DriverCompany empty OR '<unknown>' with IsKernelMode=1 — anonymous kernel-mode driver, strong BYOVD indicator
   - DriverTimeStamp far older than DriverLastWriteTime on a legitimate-looking driver path — recently dropped an old vulnerable driver
 provenance: []
+provenance: [libyal-libregf]
 ---
 
 # Amcache-InventoryDriverBinary

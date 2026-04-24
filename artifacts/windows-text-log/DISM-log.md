@@ -37,6 +37,7 @@ observations:
 anti-forensic:
   write-privilege: unknown
 provenance: []
+provenance: [kape-files-repo]
 ---
 
 # DISM.log

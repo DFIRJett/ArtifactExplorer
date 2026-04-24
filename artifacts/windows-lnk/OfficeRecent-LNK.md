@@ -55,6 +55,7 @@ anti-forensic:
   known-cleaners:
   - {tool: Office 'Clear unpinned recent documents', typically-removes: partial — targets OfficeMRU registry, not these LNK files}
 provenance: []
+provenance: [ms-shllink, libyal-liblnk]
 ---
 
 # OfficeRecent-LNK

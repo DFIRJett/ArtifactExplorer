@@ -50,6 +50,7 @@ observations:
 anti-forensic:
   write-privilege: user
 provenance: []
+provenance: [ms-shllink, libyal-liblnk]
 ---
 
 # NetworkShare-LNK

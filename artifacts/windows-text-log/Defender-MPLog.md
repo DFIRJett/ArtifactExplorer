@@ -93,6 +93,7 @@ anti-forensic:
   - MPLog gap during known-active period = Defender was disabled or session logs were deleted
   - Threat entries in MPLog but no quarantine file on disk = quarantine was purged by user or cleanup tool
 provenance: []
+provenance: [kape-files-repo]
 ---
 
 # Microsoft Defender MPLog

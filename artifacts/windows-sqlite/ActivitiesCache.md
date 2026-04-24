@@ -95,6 +95,7 @@ anti-forensic:
   - tool: manual DROP of Activity table
     typically-removes: full
 provenance: []
+provenance: [sqlite-org-fileformat]
 ---
 
 # ActivitiesCache

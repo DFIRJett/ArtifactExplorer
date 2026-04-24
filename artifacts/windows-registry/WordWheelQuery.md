@@ -60,6 +60,7 @@ anti-forensic:
   - tool: manual reg delete
     typically-removes: surgical
 provenance: []
+provenance: [libyal-libregf, regripper-plugins]
 ---
 
 # WordWheelQuery

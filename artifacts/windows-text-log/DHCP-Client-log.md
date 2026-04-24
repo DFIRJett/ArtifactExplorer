@@ -43,6 +43,7 @@ observations:
 anti-forensic:
   write-privilege: service
 provenance: []
+provenance: [kape-files-repo]
 ---
 
 # DHCP-Client-log

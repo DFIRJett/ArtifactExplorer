@@ -75,6 +75,7 @@ anti-forensic:
   - tool: CCleaner
     typically-removes: partial
 provenance: []
+provenance: [libyal-libregf, regripper-plugins]
 ---
 
 # Terminal Server Client MRU

@@ -28,22 +28,10 @@ fields:
   references-data:
   - concept: DeviceSerial
     role: usbDevice
-  note: |
-    Long composite subkey name. Two common patterns:
-
-    MASS-STORAGE (USB flash, external HDDs — the forensically common case):
-      `SWD#WPDBUSENUMROOT#UMB#2&<hex>&0&STORAGE#VOLUME#_??_USBSTOR#Disk&Ven_<V>&Prod_<P>&Rev_<R>#<InstanceID>#{<storage-class-GUID>}`
-      — contains USBSTOR InstanceID verbatim (the `<InstanceID>` segment)
-
-    MTP/PTP (phones, cameras, media players):
-      `WPDBUSENUMROOT#UMB#2&<hex>&0&_##_?{MTP/PTP-device-id}`
-      — no USBSTOR serial; MTP devices bypass mass-storage enumeration
-
-    Parser: split on `#` and search for `USBSTOR` segment; if present, the
-    segment immediately after `#Disk&Ven_...&Prod_...&Rev_...#` IS the
-    USBSTOR InstanceID. If `USBSTOR` absent, device is MTP — use alternate
-    device-id decoder (Windows Portable Devices API), different identity
-    guarantees.
+  note: "Long composite subkey name. Two common patterns:\n\nMASS-STORAGE (USB flash, external HDDs — the forensically common case):\n  `SWD#WPDBUSENUMROOT#UMB#2&<hex>&0&STORAGE#VOLUME#_??_USBSTOR#Disk&Ven_<V>&Prod_<P>&Rev_<R>#<InstanceID>#{<storage-class-GUID>}`\n\
+    \  — contains USBSTOR InstanceID verbatim (the `<InstanceID>` segment)\n\nMTP/PTP (phones, cameras, media players):\n  `WPDBUSENUMROOT#UMB#2&<hex>&0&_##_?{MTP/PTP-device-id}`\n  — no USBSTOR serial;\
+    \ MTP devices bypass mass-storage enumeration\n\nParser: split on `#` and search for `USBSTOR` segment; if present, the\nsegment immediately after `#Disk&Ven_...&Prod_...&Rev_...#` IS the\nUSBSTOR InstanceID.\
+    \ If `USBSTOR` absent, device is MTP — use alternate\ndevice-id decoder (Windows Portable Devices API), different identity\nguarantees.\n"
 - name: friendly-name
   kind: identifier
   location: FriendlyName value
@@ -57,28 +45,28 @@ fields:
   kind: identifier
   location: per-device subkey → Properties → DEVPKEY_Device_ContainerId (GUID)
   encoding: GUID
-  note: "same ContainerID GUID recorded in USBSTOR Properties and Microsoft-Windows-Partition/Diagnostic event 1006 — primary cross-artifact join for physical-device identity"
+  note: same ContainerID GUID recorded in USBSTOR Properties and Microsoft-Windows-Partition/Diagnostic event 1006 — primary cross-artifact join for physical-device identity
   references-data:
   - concept: ContainerID
     role: deviceIdentity
 - name: instance-id-property
   kind: identifier
-  location: "per-device subkey → Properties → DEVPKEY_Device_InstanceId"
+  location: per-device subkey → Properties → DEVPKEY_Device_InstanceId
   type: REG_SZ
   encoding: utf-16le
-  note: "Device InstanceID as Property (mirror of the value embedded in the subkey name). Parser convenience — read this rather than parsing the long subkey name path when available."
+  note: Device InstanceID as Property (mirror of the value embedded in the subkey name). Parser convenience — read this rather than parsing the long subkey name path when available.
 - name: device-desc-property
   kind: identifier
-  location: "per-device subkey → Properties → DEVPKEY_Device_DeviceDesc"
+  location: per-device subkey → Properties → DEVPKEY_Device_DeviceDesc
   type: REG_SZ
   encoding: utf-16le
-  note: "Device description, typically 'USB Mass Storage Device' or vendor-supplied string. Cross-references USBSTOR's DeviceDesc value."
+  note: Device description, typically 'USB Mass Storage Device' or vendor-supplied string. Cross-references USBSTOR's DeviceDesc value.
 - name: class-guid-property
   kind: identifier
-  location: "per-device subkey → Properties → DEVPKEY_Device_ClassGuid"
+  location: per-device subkey → Properties → DEVPKEY_Device_ClassGuid
   type: REG_SZ
   encoding: guid-string
-  note: "Device class: WPD-wrapper GUID (`{eec5ad98-8080-425f-922a-dabf3de3f69a}` for WPDBUSENUM) vs. DiskDrive (`{4d36e967-...}`). Distinguishes MTP from mass-storage devices."
+  note: 'Device class: WPD-wrapper GUID (`{eec5ad98-8080-425f-922a-dabf3de3f69a}` for WPDBUSENUM) vs. DiskDrive (`{4d36e967-...}`). Distinguishes MTP from mass-storage devices.'
 - name: key-last-write
   kind: timestamp
   location: device-id subkey metadata
@@ -86,7 +74,8 @@ fields:
   clock: system
   resolution: 100ns
   update-rule: set-on-enumeration-or-FriendlyName-change
-  note: "Not 'last connected' — only updates when Windows Portable Devices re-enumerates OR when FriendlyName changes (e.g., user renames the volume). First write corresponds to first WPD enumeration of the device."
+  note: Not 'last connected' — only updates when Windows Portable Devices re-enumerates OR when FriendlyName changes (e.g., user renames the volume). First write corresponds to first WPD enumeration of
+    the device.
 observations:
 - proposition: CONNECTED
   ceiling: C3
@@ -95,15 +84,16 @@ observations:
     peer.volume-label: field:friendly-name
     peer.container-id: field:container-id-property
     time.start: field:key-last-write
-  note: "Ceiling C3 because WPD carries THREE independent identity fields (serial-substring + ContainerID + volume-label), any two corroborating each other establish device identity with redundancy. Admin can still offline-edit the SOFTWARE hive."
+  note: Ceiling C3 because WPD carries THREE independent identity fields (serial-substring + ContainerID + volume-label), any two corroborating each other establish device identity with redundancy. Admin
+    can still offline-edit the SOFTWARE hive.
 anti-forensic:
   write-privilege: admin
   integrity-mechanism: none
-  audit-trail: "SOFTWARE hive transaction logs (SOFTWARE.LOG1, SOFTWARE.LOG2) retain evidence of deleted WPD subkeys."
+  audit-trail: SOFTWARE hive transaction logs (SOFTWARE.LOG1, SOFTWARE.LOG2) retain evidence of deleted WPD subkeys.
   known-cleaners:
   - tool: USBOblivion
     typically-removes: partial
-    note: "Some versions target WPD; others skip entirely. Verify per version in use."
+    note: Some versions target WPD; others skip entirely. Verify per version in use.
   - tool: CCleaner-registry-module
     typically-removes: false
   - tool: Privazer
@@ -111,14 +101,15 @@ anti-forensic:
   - tool: manual reg.exe delete
     typically-removes: true
   survival-signals:
-  - "WPD present + USBSTOR absent for same InstanceID = SYSTEM-hive cleaner hit USBSTOR but missed SOFTWARE-hive WPD. HIGH-confidence cleanup-attempt signal."
-  - "WPD FriendlyName differs from current filesystem volume label = label changed after WPD enumeration (legitimate user rename OR post-cleanup label reset to hide historical name)"
+  - WPD present + USBSTOR absent for same InstanceID = SYSTEM-hive cleaner hit USBSTOR but missed SOFTWARE-hive WPD. HIGH-confidence cleanup-attempt signal.
+  - WPD FriendlyName differs from current filesystem volume label = label changed after WPD enumeration (legitimate user rename OR post-cleanup label reset to hide historical name)
 survival-edges:
 - when: USBSTOR removed by cleaner
   survives: this-artifact
   reason: cleaners historically target HKLM\SYSTEM; HKLM\SOFTWARE\Windows Portable Devices frequently missed
 provenance:
-  - aboutdfir-nd-usb-devices-windows-artifact-r
+- aboutdfir-nd-usb-devices-windows-artifact-r
+- hedley-2024-usbstor-install-first-install
 ---
 
 # Windows Portable Devices

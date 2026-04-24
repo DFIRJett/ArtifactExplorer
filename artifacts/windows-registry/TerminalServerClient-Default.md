@@ -82,6 +82,7 @@ detection-priorities:
   - MRU entries pointing at servers not in the user's normal scope (domain controllers, jump boxes, DMZ hosts)
   - MRU entries with IPs rather than hostnames — often indicates targeted RDP outside DNS name resolution
 provenance: []
+provenance: [libyal-libregf, regripper-plugins]
 ---
 
 # TerminalServerClient-Default

@@ -91,6 +91,7 @@ detection-priorities:
   - SubmissionId empty AND Class IN (Display, DiskDrive, SCSIAdapter) — non-WHQL kernel-proximity driver, suspicious if not from a recognized OEM
   - Provider empty or mismatched with expected OEM — supply-chain or typosquat driver signing
 provenance: []
+provenance: [libyal-libregf]
 ---
 
 # Amcache-InventoryDriverPackage

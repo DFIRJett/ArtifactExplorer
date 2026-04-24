@@ -35,6 +35,7 @@ observations:
 anti-forensic:
   write-privilege: user
 provenance: []
+provenance: [libyal-libolecf, jones-2020-dfirpub-win10-jumplist-link-file]
 ---
 
 # JumpList AppID → Name Mapping

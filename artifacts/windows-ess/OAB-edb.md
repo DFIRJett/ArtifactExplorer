@@ -40,6 +40,7 @@ observations:
 anti-forensic:
   write-privilege: unknown
 provenance: []
+provenance: [libyal-libesedb]
 ---
 
 # OAB (Offline Address Book)

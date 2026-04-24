@@ -23,8 +23,7 @@ location:
   live-access: Get-DnsClientCache  /  ipconfig /displaydns  (live system — runtime cache, not registry-persistent)
   registry-persistence-area: SYSTEM\CurrentControlSet\Services\Dnscache\Parameters (config only, not cache entries)
   addressing: runtime resolver state — capture via live tools or memory
-  note: unlike most registry artifacts, DNS cache is primarily in-memory; registry path here is for the CONFIG of the cache
-    service
+  note: unlike most registry artifacts, DNS cache is primarily in-memory; registry path here is for the CONFIG of the cache service
 fields:
 - name: hostname
   kind: identifier
@@ -82,11 +81,11 @@ anti-forensic:
   - tool: system reboot
     typically-removes: full
   survival-signals:
-  - DNS cache contains domains present in browser history but NOT in firewall logs = possibly speculative DNS lookup not followed
-    by connection; OR firewall logging was off
+  - DNS cache contains domains present in browser history but NOT in firewall logs = possibly speculative DNS lookup not followed by connection; OR firewall logging was off
   - DNS cache flushed within last minute + suspicious browser activity = deliberate evidence destruction
 provenance:
-  - ms-name-resolution-policy-table-nrpt-r
+- ms-name-resolution-policy-table-nrpt-r
+- regripper-plugins
 ---
 
 # Windows DNS Resolver Cache

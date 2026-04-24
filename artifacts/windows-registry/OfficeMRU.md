@@ -69,6 +69,7 @@ anti-forensic:
   - tool: CCleaner Office module
     typically-removes: full
 provenance: []
+provenance: [libyal-libregf, regripper-plugins]
 ---
 
 # OfficeMRU

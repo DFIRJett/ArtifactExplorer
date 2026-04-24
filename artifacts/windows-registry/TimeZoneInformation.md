@@ -124,6 +124,7 @@ exit-node:
     Read access to HKLM\SYSTEM\CurrentControlSet\Control\
     TimeZoneInformation. Value directly readable; no crypto chain.
   identifier-terminals-referenced: []
+provenance: [libyal-libregf]
 ---
 
 # TimeZoneInformation

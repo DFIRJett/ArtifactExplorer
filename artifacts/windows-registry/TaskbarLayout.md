@@ -57,6 +57,7 @@ anti-forensic:
   write-privilege: user
   integrity-mechanism: none
 provenance: []
+provenance: [libyal-libregf]
 ---
 
 # Taskbar Layout

@@ -44,6 +44,7 @@ observations:
 anti-forensic:
   write-privilege: admin
 provenance: []
+provenance: [libyal-libregf, regripper-plugins]
 ---
 
 # AppPaths

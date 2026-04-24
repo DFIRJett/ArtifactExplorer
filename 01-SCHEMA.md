@@ -441,7 +441,7 @@ language model. The collaboration pattern was as follows:
 
 ### Citing this document or the viewer
 
-If you cite SCHEMA.md, the ArtifactExplorer viewer, or any AI-collaborated component
+If you cite 01-SCHEMA.md, the ArtifactExplorer viewer, or any AI-collaborated component
 of this project in academic work, the recommended pattern is:
 
 **APA 7th edition — reference list entry:**

@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/mondrianaire/DFIRCLI/blob/main/schema/convergence.schema.json",
-  "title": "DFIRCLI Convergence frontmatter",
+  "$id": "https://github.com/DFIRJett/ArtifactExplorer/blob/main/schema/convergence.schema.json",
+  "title": "ArtifactExplorer Convergence frontmatter",
   "description": "Schema for the YAML frontmatter of a convergence file under convergences/<name>.md. A convergence is a tier-2 multi-artifact join via shared identifier-concept values that yields a higher-level forensic claim.",
   "type": "object",
   "additionalProperties": true,

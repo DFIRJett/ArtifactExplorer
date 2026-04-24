@@ -1,4 +1,4 @@
-# DFIRCLI — DFIR Training Regimen
+# ArtifactExplorer — DFIR Training Regimen
 
 ## Purpose
 This project is a personal DFIR (Digital Forensics & Incident Response) training regimen and reference. The user is building tier-3 analyst skills and uses this project to:

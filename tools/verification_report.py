@@ -1,4 +1,4 @@
-"""Verification report for DFIRCLI corpus.
+"""Verification report for ArtifactExplorer corpus.
 
 Reports on which artifacts / sources have been audit-verified during
 priority-driven crawl vs which still carry mass-population inheritance.

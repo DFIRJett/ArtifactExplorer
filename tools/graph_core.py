@@ -1,5 +1,5 @@
 """
-Shared parsing layer for DFIRCLI graph tools.
+Shared parsing layer for ArtifactExplorer graph tools.
 
 Model (v0.3):
   - Artifact = a registry key / file / log / etc. that carries forensic data

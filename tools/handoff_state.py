@@ -40,7 +40,7 @@ ROOT = Path(__file__).resolve().parent.parent
 # Resolve via home directory so the path works regardless of where the repo
 # sits in the filesystem.
 _USER_HOME = Path.home()
-MEM = _USER_HOME / ".claude" / "projects" / "C--Users-mondr-Documents-ProgFor-DFIRCLI" / "memory"
+MEM = _USER_HOME / ".claude" / "projects" / "C--Users-mondr-Documents-ProgFor-ArtifactExplorer" / "memory"
 HANDOFF = MEM / "HANDOFF.md"
 INBOX_STATUS = MEM / "INBOX" / "STATUS.md"
 

@@ -16,7 +16,7 @@ import sys
 
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
-ROOT = pathlib.Path(r"C:\Users\mondr\Documents\ProgFor\DFIRCLI")
+ROOT = pathlib.Path(r"C:\Users\mondr\Documents\ProgFor\ArtifactExplorer")
 ARTIFACTS = ROOT / "artifacts"
 
 # Mapping: artifact-name -> substrate-hub value (per proposal § Data)

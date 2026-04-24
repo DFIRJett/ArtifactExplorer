@@ -41,7 +41,7 @@ VERIFIED_WEIGHT = 0.3  # downweight contribution from verified-peer edges (alrea
 
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
-ROOT = pathlib.Path(r"C:\Users\mondr\Documents\ProgFor\DFIRCLI")
+ROOT = pathlib.Path(r"C:\Users\mondr\Documents\ProgFor\ArtifactExplorer")
 DATA_JSON = ROOT / "viewer" / "data.json"
 CRAWL_YAML = ROOT / "tools" / "crawl_state.yaml"
 

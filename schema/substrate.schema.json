@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/mondrianaire/DFIRCLI/blob/main/schema/substrate.schema.json",
-  "title": "DFIRCLI Container frontmatter",
+  "$id": "https://github.com/DFIRJett/ArtifactExplorer/blob/main/schema/substrate.schema.json",
+  "title": "ArtifactExplorer Container frontmatter",
   "description": "Schema for the YAML frontmatter of a substrate file under data/substrates/<name>.md. Each file defines one substrate (binary-structured-file / plaintext-log / etc) that hosts artifacts.",
   "type": "object",
   "additionalProperties": true,

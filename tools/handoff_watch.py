@@ -39,7 +39,7 @@ import time
 sys.stdout.reconfigure(line_buffering=True, encoding="utf-8", errors="replace")
 
 MEMORY_ROOT = pathlib.Path(
-    r"C:\Users\mondr\.claude\projects\C--Users-mondr-Documents-ProgFor-DFIRCLI\memory"
+    r"C:\Users\mondr\.claude\projects\C--Users-mondr-Documents-ProgFor-ArtifactExplorer\memory"
 )
 HANDOFF = MEMORY_ROOT / "HANDOFF.md"
 INBOX = MEMORY_ROOT / "INBOX"

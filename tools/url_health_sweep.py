@@ -37,12 +37,12 @@ import ssl
 
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
-ROOT = pathlib.Path(r"C:\Users\mondr\Documents\ProgFor\DFIRCLI")
+ROOT = pathlib.Path(r"C:\Users\mondr\Documents\ProgFor\ArtifactExplorer")
 SOURCES = ROOT / "schema" / "sources.yaml"
 REPORT = ROOT / "tools" / "_url_health_report.yaml"
 
 HDRS = {
-    "User-Agent": "Mozilla/5.0 (DFIRCLI URL-health sweep; see schema/sources.yaml)",
+    "User-Agent": "Mozilla/5.0 (ArtifactExplorer URL-health sweep; see schema/sources.yaml)",
     "Accept": "*/*",
 }
 

@@ -1,4 +1,4 @@
-# DFIRCLI
+# ArtifactExplorer
 
 A personal DFIR training regimen driven by Claude Code + the `cybersecurity-skills` plugin.
 
@@ -31,7 +31,7 @@ Verify with `/plugin list`.
 
 ## Layout
 ```
-DFIRCLI/
+ArtifactExplorer/
 ├── CLAUDE.md               # Project instructions for Claude Code
 ├── skills-index.md         # Curated DFIR skill pointers into the plugin
 ├── training/

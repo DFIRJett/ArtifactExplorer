@@ -1,4 +1,4 @@
-"""Coverage report for DFIRCLI source registry.
+"""Coverage report for ArtifactExplorer source registry.
 
 Usage:
   python tools/coverage_report.py                   # full report

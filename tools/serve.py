@@ -1,5 +1,5 @@
 """
-DFIRCLI dev server + file watcher.
+ArtifactExplorer dev server + file watcher.
 
 Starts a local HTTP server for viewer/ and watches artifact/container/schema
 files. On any change, rebuilds viewer/data.json automatically. You just
@@ -164,7 +164,7 @@ def classify_changes(
 
 def main() -> None:
     ap = argparse.ArgumentParser(
-        description="DFIRCLI dev server + auto-rebuild watcher"
+        description="ArtifactExplorer dev server + auto-rebuild watcher"
     )
     ap.add_argument("--port", type=int, default=8000)
     ap.add_argument(

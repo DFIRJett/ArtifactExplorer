@@ -49,7 +49,7 @@ OVERRIDES = {
         "Digital evidence can at most attribute activity to an account; converting account-level attribution to person-level attribution requires evidence from outside the digital domain (physical access logs, video, biometrics, admissions), a boundary that cannot be closed by additional digital corroboration (Casey, 2002)."),
 }
 
-root = r'C:\Users\mondr\Documents\ProgFor\DFIRCLI\scenarios'
+root = r'C:\Users\mondr\Documents\ProgFor\ArtifactExplorer\scenarios'
 total_written = 0
 for fn in sorted(os.listdir(root)):
     if not fn.endswith('.md'): continue

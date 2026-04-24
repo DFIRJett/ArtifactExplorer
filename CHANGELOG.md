@@ -1,6 +1,6 @@
 # Changelog
 
-Notable changes to DFIRCLI. Tagged versions only; untagged commits advance the `latest-stable` rolling pointer between releases.
+Notable changes to ArtifactExplorer. Tagged versions only; untagged commits advance the `latest-stable` rolling pointer between releases.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/). Versioning is pre-1.0 and uses the pattern `vN-descriptor` — see `docs/architecture.md` for the scheme.
 

@@ -1,4 +1,4 @@
-# DFIRCLI Schema Reference
+# ArtifactExplorer Schema Reference
 
 A complete field-by-field reference for the four schemas this project authors,
 organized around the three-tier evidentiary model the corpus is built on.
@@ -418,7 +418,7 @@ reconciliation report.*
 
 ## AI assistance disclosure
 
-This document and the broader DFIRCLI viewer codebase were developed in
+This document and the broader ArtifactExplorer viewer codebase were developed in
 collaboration with **Claude Opus 4.7 (1M context)**, an Anthropic large
 language model. The collaboration pattern was as follows:
 
@@ -441,7 +441,7 @@ language model. The collaboration pattern was as follows:
 
 ### Citing this document or the viewer
 
-If you cite SCHEMA.md, the DFIRCLI viewer, or any AI-collaborated component
+If you cite SCHEMA.md, the ArtifactExplorer viewer, or any AI-collaborated component
 of this project in academic work, the recommended pattern is:
 
 **APA 7th edition — reference list entry:**

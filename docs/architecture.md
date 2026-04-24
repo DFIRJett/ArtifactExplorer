@@ -1,4 +1,4 @@
-# DFIRCLI Architecture
+# ArtifactExplorer Architecture
 
 Lock-in spec for the project's data model. The restructure commits (B through J) implement against this document; if there is a conflict between this doc and later implementation, the doc wins and the implementation is wrong.
 
@@ -8,7 +8,7 @@ Subsequent rounds of refinement update this doc first, then the code.
 
 ## Purpose
 
-DFIRCLI is a **training corpus** for tier-3 DFIR analysts. Its job is to encode forensic knowledge as structured, cross-referenced data that a viewer can render as an interactive graph and that an analyst can use to reason about investigative chains.
+ArtifactExplorer is a **training corpus** for tier-3 DFIR analysts. Its job is to encode forensic knowledge as structured, cross-referenced data that a viewer can render as an interactive graph and that an analyst can use to reason about investigative chains.
 
 The data model separates two concerns that DFIR community vocabulary conflates:
 
@@ -522,7 +522,7 @@ steps:
 ## Directory and file layout (after restructure)
 
 ```
-DFIRCLI/
+ArtifactExplorer/
 ├── artifacts/
 │   └── <substrate>/<artifact-name>.md
 ├── substrates/                              # was containers/

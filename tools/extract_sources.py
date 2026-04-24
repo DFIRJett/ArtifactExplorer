@@ -223,7 +223,7 @@ def main():
     records = sorted(registry.values(), key=lambda r: r["id"])
     SOURCES_OUT.parent.mkdir(parents=True, exist_ok=True)
     with SOURCES_OUT.open("w", encoding="utf-8", newline="\n") as f:
-        f.write("# DFIRCLI source registry — APA-formatted bibliographic entries\n")
+        f.write("# ArtifactExplorer source registry — APA-formatted bibliographic entries\n")
         f.write("# referenced by `provenance:` on artifacts, concepts, convergences, scenarios.\n")
         f.write("# DRAFT — regenerated from legacy per-artifact `sources:` blocks. Review before trusting.\n\n")
         yaml.safe_dump({"sources": records}, f, sort_keys=False, allow_unicode=True, width=9999)

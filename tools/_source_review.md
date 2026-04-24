@@ -1,4 +1,4 @@
-# DFIRCLI Source Registry Review
+# ArtifactExplorer Source Registry Review
 
 Review of `schema/sources.yaml` (273 entries). Each entry classified into KEEP / STRENGTHEN-URL / FIX-METADATA / REMOVE based on whether the URL is specific, and whether author/title match it.
 

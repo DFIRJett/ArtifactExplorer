@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""validate.py — DFIRCLI corpus validator.
+"""validate.py — ArtifactExplorer corpus validator.
 
 Reads every .md file under the data tree (artifacts/, substrates/,
 concepts/ or concepts/, scenarios/), parses the YAML frontmatter,

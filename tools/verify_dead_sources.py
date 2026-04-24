@@ -33,7 +33,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SOURCES = ROOT / "schema" / "sources.yaml"
 CRAWL_STATE = ROOT / "tools" / "crawl_state.yaml"
 
-UA = "Mozilla/5.0 (compatible; DFIRCLI-crawl-verifier/1.0)"
+UA = "Mozilla/5.0 (compatible; ArtifactExplorer-crawl-verifier/1.0)"
 TIMEOUT = 15
 
 # Sources proactively flagged as possibly-dead (same mechanical batch as the

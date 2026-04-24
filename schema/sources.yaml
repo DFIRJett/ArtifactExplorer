@@ -257,8 +257,8 @@ sources:
     \  etc. simultaneously).\n  3. Pages have: title with type/category tags, per-artifact subsections with\n     hive/location\
     \ tables, and a References section linking external sources.\n\nPer-page fields available: registry hive + key path, recoverable\
     \ field\nnames, timestamps (when applicable), cross-references to related pages.\n\nPitfalls:\n  - Hub pages lump related\
-    \ artifacts together; cite the page URL for all\n    relevant DFIRCLI artifacts rather than assuming 1:1 page-to-artifact.\n\
-    \  - Slug-to-artifact mapping requires content verification; some slugs don't\n    obviously align with DFIRCLI artifact\
+    \ artifacts together; cite the page URL for all\n    relevant ArtifactExplorer artifacts rather than assuming 1:1 page-to-artifact.\n\
+    \  - Slug-to-artifact mapping requires content verification; some slugs don't\n    obviously align with ArtifactExplorer artifact\
     \ names.\n"
   kind: index-catalog
   authority: secondary
@@ -1064,7 +1064,7 @@ sources:
   note: Canonical cross-tool artifact definition catalog. Per-artifact YAML entries with name, doc, sources (REGISTRY_VALUE
     / REGISTRY_KEY / FILE / COMMAND / WMI), supported_os, urls. Consumed by Plaso, Velociraptor, GRR.
   access-guide: "Repository layout:\n  /artifacts/data/windows.yaml     — Windows artifact definitions\n  /artifacts/data/linux.yaml\
-    \       — Linux (not primary scope for DFIRCLI)\n  /artifacts/data/macos.yaml       — macOS (not primary scope)\n  /artifacts/data/webbrowser.yaml\
+    \       — Linux (not primary scope for ArtifactExplorer)\n  /artifacts/data/macos.yaml       — macOS (not primary scope)\n  /artifacts/data/webbrowser.yaml\
     \  — cross-OS browser artifacts\n  /docs/Format%20specification.html — schema reference\n\nFinding a specific artifact:\n\
     \  1. Open the relevant YAML (typically windows.yaml).\n  2. Each artifact entry is separated by '---' YAML-document boundary.\n\
     \  3. Match by the `name:` field — e.g., `name: WindowsComputerName`.\n     Naming is not our project's naming (we use\
@@ -1073,9 +1073,9 @@ sources:
     \ with `type:` (REGISTRY_VALUE /\n                    REGISTRY_KEY / FILE / COMMAND / WMI / PATH / etc.)\n           \
     \         and `attributes:` (keys/values/paths/query)\n  - supported_os  (Windows / Linux / Darwin)\n  - urls[]      \
     \  (external references)\n  - conditions[]  (optional — dependencies on other artifacts)\n  - labels[]      (free-form\
-    \ tags)\n  - provides[]    (what data this artifact yields)\n\nPitfalls:\n  - FA artifact names don't match DFIRCLI artifact\
+    \ tags)\n  - provides[]    (what data this artifact yields)\n\nPitfalls:\n  - FA artifact names don't match ArtifactExplorer artifact\
     \ names. Cross-reference\n    by registry path / file path / event ID rather than by name.\n  - One FA entry can cover\
-    \ multiple DFIRCLI artifacts (e.g., a single\n    REGISTRY_KEY with a path glob covers many subkeys).\n"
+    \ multiple ArtifactExplorer artifacts (e.g., a single\n    REGISTRY_KEY with a path glob covers many subkeys).\n"
   kind: index-catalog
   authority: secondary
   coverage:
@@ -1939,7 +1939,7 @@ sources:
     Per-entry fields available: ID, title, description, applicable platforms,\nMITRE mapping, affected paths/log sources,\
     \ example commands, cross-refs,\nsubsections.\n\nPitfalls:\n  - URL case sensitivity: trailing-slash behavior is inconsistent.\
     \ Some\n    direct WebFetch URLs 404 while the same page resolves via the nav menu.\n    Verify the exact URL form before\
-    \ scripting citations.\n  - Old DFIRCLI references used a hypothetical 'ART-N' scheme — the real\n    pattern is AR{1-5}\
+    \ scripting citations.\n  - Old ArtifactExplorer references used a hypothetical 'ART-N' scheme — the real\n    pattern is AR{1-5}\
     \ for articles and letter-prefixed codes for sections.\n  - Preventions (PV) and Detections (DT) use global numeric ranges;\n\
     \    sections (MT/ME/PR/IF/AF) use AR-scoped numbering.\n"
   kind: index-catalog
@@ -3272,7 +3272,7 @@ sources:
   url: https://insiderthreatmatrix.org/detections/DT024
   apa: Insider Threat Matrix (n.d.). DT024 - Windows Event Log, DriverFrameworks-UserMode. Insider Threat Matrix. https://insiderthreatmatrix.org/detections/DT024
   note: ITM DT024 dedicated page for DriverFrameworks-UserMode/Operational event channel. Documents events 2003/2100/2102
-    (narrower than DFIRCLI's Kernel-PnP 2003/2004/2100/2101/2102/2105 set). Notably does NOT cross-ref DT021/023/025/087 (diverges
+    (narrower than ArtifactExplorer's Kernel-PnP 2003/2004/2100/2101/2102/2105 set). Notably does NOT cross-ref DT021/023/025/087 (diverges
     from the heavy sibling cross-ref pattern of the other USB-family DT pages).
   kind: analyst-writeup
   authority: primary
@@ -7688,7 +7688,7 @@ sources:
     \ date, title, TTPs, category tags, narrative\nprose, IOCs, artifact paths, Sigma rules.\n\nPitfalls:\n  - Post URLs include\
     \ the publication date — can't construct a URL from\n    slug alone. Navigate from the main page or a category index.\n\
     \  - Reports sometimes describe artifact paths with generic placeholders\n    (C:\\Users\\<user>\\...) that need normalization\
-    \ when cited.\n  - Older posts (pre-2022) may reference artifact names that have since\n    been renamed in DFIRCLI's\
+    \ when cited.\n  - Older posts (pre-2022) may reference artifact names that have since\n    been renamed in ArtifactExplorer's\
     \ corpus.\n"
   kind: index-catalog
   authority: secondary

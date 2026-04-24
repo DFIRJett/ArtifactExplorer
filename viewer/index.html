@@ -20,7 +20,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>DFIRCLI — Forensic Artifact Graph</title>
+  <title>ArtifactExplorer — Forensic Artifact Graph</title>
   <style>
     :root {
       --bg: #000000;
@@ -3353,11 +3353,11 @@
        Inspector + tool pane split the flex space 2:1; view-summary and
        legend are fixed-size (with legend capped + internal scroll). -->
   <div id="left-dock">
-    <!-- DFIRCLI brand + Reset on the same row. Header label sits left,
+    <!-- ArtifactExplorer brand + Reset on the same row. Header label sits left,
          Reset button sits right (parallel with the brand) so the dock
          opens with both anchors visible without consuming a separate row. -->
     <div class="dock-header dock-header-row">
-      <span class="dock-header-brand">DFIRCLI</span>
+      <span class="dock-header-brand">ArtifactExplorer</span>
       <div class="dock-header-actions">
         <a href="../SCHEMA.md" target="_blank" rel="noopener" class="dock-reset-action dock-schema-link" title="Open the schema reference document (SCHEMA.md) in a new tab">Schema</a>
         <button id="dock-reset-filters-btn" class="dock-reset-action" title="Restore all filters to their default state (show everything)">Reset filters</button>
@@ -5198,7 +5198,7 @@
   // rule for .label-pinned forces opacity:1 + bold white fill regardless of
   // any tick-handler opacity adjustments, so pinned labels stay visible
   // through hover, scenario-dim, walkthrough, focus modes, everything.
-  const PINNED_LABELS_STORAGE_KEY = "dfircli.pinnedLabels.v1";
+  const PINNED_LABELS_STORAGE_KEY = "artifactexplorer.pinnedLabels.v1";
   function _savePinnedLabels() {
     try {
       localStorage.setItem(PINNED_LABELS_STORAGE_KEY, JSON.stringify({
@@ -7098,7 +7098,7 @@
       // (mother, hub, artifact, concept) can be dragged and pinned. Hubs
       // continue to use their own HUB_STORAGE_KEY (backward compat); the
       // unified NODE store layers on top for the rest.
-      const NODE_STORAGE_KEY = "dfircli.substrate.nodePositions.v1";
+      const NODE_STORAGE_KEY = "artifactexplorer.substrate.nodePositions.v1";
       let savedNodes = JSON.parse(localStorage.getItem(NODE_STORAGE_KEY) || "{}");
       // Defensive: if a prior Save view captured bad (near-origin) positions,
       // the cache will pin every node to (0,0) — substrate force-collapse symptom.
@@ -7479,7 +7479,7 @@
       // Hub positions persist across reloads. Absolute coordinates (the
       // mothers are fixed, so absolute works). Drag a hub to pin it;
       // double-click to release it back to the force simulation.
-      const HUB_STORAGE_KEY = "dfircli.substrate.hubPositions.v1";
+      const HUB_STORAGE_KEY = "artifactexplorer.substrate.hubPositions.v1";
       const savedHubs = JSON.parse(localStorage.getItem(HUB_STORAGE_KEY) || "{}");
       for (const h of hubNodes) {
         const saved = savedHubs[h.id];
@@ -7636,7 +7636,7 @@
       const self = this;
       // Satellite positions persist across reloads via localStorage so the
       // user can arrange their IOC halo how they want and it stays that way.
-      const SAT_STORAGE_KEY = "dfircli.substrate.satellitePositions.v1";
+      const SAT_STORAGE_KEY = "artifactexplorer.substrate.satellitePositions.v1";
       const savedPositions = JSON.parse(localStorage.getItem(SAT_STORAGE_KEY) || "{}");
       for (const s of satelliteNodes) {
         const saved = savedPositions[s.id];
@@ -7756,7 +7756,7 @@
       // substrate labels render uniformly. Stale entries in localStorage
       // from previous sessions are actively cleared here so they don't
       // reappear on reload.
-      const NODE_STYLE_KEY = "dfircli.substrate.nodeStyles.v1";
+      const NODE_STYLE_KEY = "artifactexplorer.substrate.nodeStyles.v1";
       localStorage.removeItem(NODE_STYLE_KEY);
       function saveNodeStyles() { /* no-op — overrides disabled */ }
       self._saveNodeStyles = saveNodeStyles;
@@ -11355,7 +11355,7 @@
         const canvas = renderer && renderer.domElement;
         if (!canvas) return;
         const blob = await new Promise(res => canvas.toBlob(res, "image/png"));
-        if (blob) downloadBlob(blob, `dfircli-${viewId}-${ts}.png`);
+        if (blob) downloadBlob(blob, `artifactexplorer-${viewId}-${ts}.png`);
         return;
       }
       // 2D SVG path
@@ -11461,7 +11461,7 @@
                   reject(new Error(`toBlob returned null at ${canvas.width}x${canvas.height} — PNG encoding likely ran out of memory. Try a smaller scale.`));
                   return;
                 }
-                downloadBlob(blob, `dfircli-${viewId}-${actualFactor}x-${ts}.png`);
+                downloadBlob(blob, `artifactexplorer-${viewId}-${actualFactor}x-${ts}.png`);
                 resolve();
               }, "image/png");
             } catch (e) { reject(e); }
